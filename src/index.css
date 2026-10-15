@@ -1500,15 +1500,24 @@ a {
   font-weight: 700;
 }
 
+.blast-legend--rich {
+  grid-template-columns: repeat(3, 1fr);
+  max-height: 118px;
+  overflow: auto;
+  padding-bottom: 2px;
+}
+
 .blast-legend span {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  min-height: 40px;
+  min-height: 36px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.68rem;
+  padding: 0 4px;
 }
 
 .lg {

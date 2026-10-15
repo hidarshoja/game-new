@@ -18,13 +18,8 @@ const MIN_PADDLE = 64
 const MAX_PADDLE = 190
 const BASE_SPEED = 290
 
-const PRIZE_COLOR = {
-  wide: '#34d399',
-  narrow: '#fb7185',
-  multi: '#c084fc',
-  star: '#facc15',
-  slow: '#67e8f9',
-}
+const PRIZE_COLOR = Object.fromEntries(PRIZE_TYPES.map((item) => [item.id, item.color]))
+const DEFAULT_PADDLE = 118
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value))
@@ -138,48 +133,81 @@ export default function BallBlast() {
 
   const applyPrize = (prize) => {
     const world = worldRef.current
-    const layout = layoutRef.current
+    const source = world.balls[0]
     if (prize.id === 'wide') {
-      world.paddleW = Math.min(MAX_PADDLE, world.paddleW * 1.28)
+      world.paddleW = Math.min(MAX_PADDLE, world.paddleW * 1.3)
       toast('راکت بزرگ شد')
       playMatch()
     } else if (prize.id === 'narrow') {
-      world.paddleW = Math.max(MIN_PADDLE, world.paddleW * 0.72)
+      world.paddleW = Math.max(MIN_PADDLE, world.paddleW * 0.7)
       toast('راکت کوچک شد')
       playFlip()
     } else if (prize.id === 'multi') {
-      const source = world.balls[0]
       if (source && world.balls.length < 5) {
         world.balls.push(
-          spawnBall(source.x, source.y, -160, -BASE_SPEED),
-          spawnBall(source.x, source.y, 160, -BASE_SPEED),
+          spawnBall(source.x, source.y, -170, -BASE_SPEED),
+          spawnBall(source.x, source.y, 170, -BASE_SPEED),
         )
-        toast('توپ بیشتر!')
+        toast('چند توپ!')
         playMatch()
       } else {
-        world.score += 40
-        toast('+۴۰')
+        world.score += 50
+        toast('+۵۰')
+        playPop()
+      }
+    } else if (prize.id === 'twin') {
+      if (source && world.balls.length < 5) {
+        world.balls.push(spawnBall(source.x + 10, source.y, 140, -BASE_SPEED))
+        toast('توپ اضافه')
+        playMatch()
+      } else {
+        world.score += 35
+        toast('+۳۵')
         playPop()
       }
     } else if (prize.id === 'star') {
       world.score += 80
       toast('+۸۰')
       playMatch()
+    } else if (prize.id === 'mega') {
+      world.score += 160
+      toast('+۱۶۰')
+      playMatch()
     } else if (prize.id === 'slow') {
-      world.balls.forEach((ball) => setSpeed(ball, speedOf(ball) * 0.82))
+      world.balls.forEach((ball) => setSpeed(ball, speedOf(ball) * 0.78))
       toast('آهسته‌تر شد')
       playFlip()
+    } else if (prize.id === 'fast') {
+      world.balls.forEach((ball) => setSpeed(ball, speedOf(ball) * 1.22))
+      toast('سریع‌تر شد')
+      playFlip()
+    } else if (prize.id === 'fire') {
+      world.fireTimer = 8
+      toast('توپ آتشین!')
+      playMatch()
+    } else if (prize.id === 'reset') {
+      world.paddleW = DEFAULT_PADDLE
+      toast('راکت عادی')
+      playFlip()
+    } else if (prize.id === 'gift') {
+      const bonus = 40 + Math.floor(world.random() * 90)
+      world.score += bonus
+      if (world.random() > 0.5) {
+        world.paddleW = Math.min(MAX_PADDLE, world.paddleW * 1.15)
+      } else if (source && world.balls.length < 4) {
+        world.balls.push(spawnBall(source.x, source.y, -120, -BASE_SPEED))
+      }
+      toast(`هدیه +${bonus}`)
+      playMatch()
     }
-    world.score += 15
-    if (layout) {
-      world.floaters = world.floaters || []
-      world.floaters.push({
-        x: prize.x,
-        y: prize.y,
-        text: prize.icon,
-        life: 1,
-      })
-    }
+    world.score += 12
+    world.floaters = world.floaters || []
+    world.floaters.push({
+      x: prize.x,
+      y: prize.y,
+      text: prize.icon,
+      life: 1,
+    })
   }
 
   const dropPrize = (x, y) => {
@@ -208,7 +236,7 @@ export default function BallBlast() {
       text: `+${10 + brick.hp * 5}`,
       life: 1,
     })
-    if (world.random() < 0.42) dropPrize(box.x + box.w / 2, box.y + box.h / 2)
+    if (world.random() < 0.55) dropPrize(box.x + box.w / 2, box.y + box.h / 2)
     if (world.bricks.length === 0) {
       world.wave += 1
       for (let row = 0; row < 4; row++) {
@@ -226,10 +254,11 @@ export default function BallBlast() {
     const overlapY = ball.y < box.y ? box.y - ball.y : ball.y - (box.y + box.h)
     if (Math.abs(overlapX) < Math.abs(overlapY)) ball.vx *= -1
     else ball.vy *= -1
-    brick.hp -= 1
+    const dmg = worldRef.current.fireTimer > 0 ? 2 : 1
+    brick.hp -= dmg
     if (brick.hp <= 0) breakBrick(brick)
     else {
-      worldRef.current.score += 2
+      worldRef.current.score += 2 * dmg
       playPop()
     }
     setSpeed(ball, speedOf(ball) + 4)
@@ -252,7 +281,7 @@ export default function BallBlast() {
     world.prizeTimer -= dt
     if (world.prizeTimer <= 0) {
       dropPrize(30 + world.random() * (width - 60), 8)
-      world.prizeTimer = 4.2 + world.random() * 3.5
+      world.prizeTimer = 2.6 + world.random() * 2.8
     }
 
     world.rowTimer -= dt
@@ -320,22 +349,16 @@ export default function BallBlast() {
       return
     }
 
+    if (world.fireTimer > 0) world.fireTimer = Math.max(0, world.fireTimer - dt)
+
+    // جایزه فقط با راکت گرفته می‌شود؛ برخورد توپ اثری ندارد
     world.prizes = world.prizes.filter((prize) => {
       prize.y += prize.vy * dt
-      let taken = false
-      for (const ball of world.balls) {
-        const dx = ball.x - prize.x
-        const dy = ball.y - prize.y
-        if (dx * dx + dy * dy < (BALL_R + prize.r) * (BALL_R + prize.r)) {
-          taken = true
-          break
-        }
-      }
       const onPaddle =
         prize.y + prize.r >= paddleY &&
         prize.y - prize.r <= paddleY + PADDLE_H &&
         Math.abs(prize.x - world.paddleX) < half + prize.r
-      if (taken || onPaddle) {
+      if (onPaddle) {
         applyPrize(prize)
         return false
       }
@@ -429,11 +452,12 @@ export default function BallBlast() {
 
     for (const ball of world.balls) {
       ctx.save()
-      ctx.shadowColor = '#ddd6fe'
-      ctx.shadowBlur = 12
+      const onFire = world.fireTimer > 0
+      ctx.shadowColor = onFire ? '#fb923c' : '#ddd6fe'
+      ctx.shadowBlur = onFire ? 18 : 12
       const g = ctx.createRadialGradient(ball.x - 2, ball.y - 2, 1, ball.x, ball.y, BALL_R)
       g.addColorStop(0, '#fff')
-      g.addColorStop(1, '#a78bfa')
+      g.addColorStop(1, onFire ? '#f97316' : '#a78bfa')
       ctx.fillStyle = g
       ctx.beginPath()
       ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2)
@@ -510,10 +534,10 @@ export default function BallBlast() {
     )
   } else {
     actions = (
-      <div className="blast-legend">
-        {PRIZE_TYPES.slice(0, 4).map((prize) => (
+      <div className="blast-legend blast-legend--rich">
+        {PRIZE_TYPES.map((prize) => (
           <span key={prize.id}>
-            <i className={`lg lg-${prize.id}`} />
+            <i className="lg" style={{ background: prize.color, color: prize.color }} />
             {prize.label}
           </span>
         ))}
@@ -565,7 +589,7 @@ export default function BallBlast() {
               <span className="box box-gold">★</span>
             </div>
             <h2 className="level-panel__title">توپ را با راکت برگردان</h2>
-            <p className="level-panel__meta">جایزه از بالا می‌آید · توپ همیشه در حرکت است</p>
+            <p className="level-panel__meta">جایزه را فقط با راکت بگیر · توپ همیشه در حرکت است</p>
           </div>
         )}
 
