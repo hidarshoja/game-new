@@ -11,6 +11,9 @@ import MetroRun from './games/MetroRun'
 import FruitBasket from './games/FruitBasket'
 import BallTower from './games/BallTower'
 import NumberMerge from './games/NumberMerge'
+import TicTacToe from './games/TicTacToe'
+import CarGame from './games/CarGame'
+import AnimalSounds from './games/AnimalSounds'
 
 export default function App() {
   return (
@@ -28,6 +31,9 @@ export default function App() {
           <Route path="/games/fruit" element={<FruitBasket />} />
           <Route path="/games/tower" element={<BallTower />} />
           <Route path="/games/merge" element={<NumberMerge />} />
+          <Route path="/games/tic-tac-toe" element={<TicTacToe />} />
+          <Route path="/games/car" element={<CarGame />} />
+          <Route path="/games/animal-sounds" element={<AnimalSounds />} />
           <Route path="/games/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
