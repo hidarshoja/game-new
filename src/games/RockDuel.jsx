@@ -200,7 +200,9 @@ export default function RockDuel() {
 }
 
 function laneY(h, lane) {
-  return h * (0.3 + lane * 0.18)
+  const top = 128
+  const bottom = Math.max(top + 80, h - 118)
+  return top + lane * ((bottom - top) / 2)
 }
 
 function drawDuel(canvas, state, w, h) {
