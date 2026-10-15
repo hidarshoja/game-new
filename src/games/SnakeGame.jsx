@@ -8,7 +8,7 @@ import {
   stepMs,
   tick,
 } from './snakeLogic'
-import { playCheer, playFlip, playMatch, playPop } from '../utils/sounds'
+import { playCheer, playMatch, playPop } from '../utils/sounds'
 
 function roundRect(ctx, x, y, w, h, r) {
   const radius = Math.min(r, w / 2, h / 2)
@@ -50,16 +50,25 @@ export default function SnakeGame() {
     if (!canvas || !wrap) return null
     const rect = wrap.getBoundingClientRect()
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    const size = Math.max(260, Math.floor(Math.min(rect.width || 300, rect.height || 300, 420)))
-    canvas.width = Math.floor(size * dpr)
-    canvas.height = Math.floor(size * dpr)
-    canvas.style.width = `${size}px`
-    canvas.style.height = `${size}px`
+    const width = Math.max(280, Math.floor(rect.width))
+    const height = Math.max(360, Math.floor(rect.height))
+    canvas.width = Math.floor(width * dpr)
+    canvas.height = Math.floor(height * dpr)
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
     const ctx = canvas.getContext('2d')
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    const pad = 10
-    const cell = (size - pad * 2) / GRID
-    layoutRef.current = { size, pad, cell }
+
+    const topSafe = 52
+    const bottomSafe = 108
+    const sidePad = 6
+    const usableW = width - sidePad * 2
+    const usableH = Math.max(180, height - topSafe - bottomSafe)
+    const cell = Math.max(14, Math.floor(Math.min(usableW / GRID, usableH / GRID)))
+    const board = cell * GRID
+    const ox = Math.floor((width - board) / 2)
+    const oy = Math.floor(topSafe + Math.max(0, (usableH - board) / 2))
+    layoutRef.current = { width, height, cell, ox, oy, board }
     return layoutRef.current
   }
 
@@ -69,75 +78,105 @@ export default function SnakeGame() {
     const state = stateRef.current
     if (!canvas || !layout || !state) return
     const ctx = canvas.getContext('2d')
-    const { size, pad, cell } = layout
+    const { width, height, cell, ox, oy, board } = layout
 
-    const bg = ctx.createLinearGradient(0, 0, size, size)
-    bg.addColorStop(0, '#102018')
-    bg.addColorStop(1, '#163024')
+    const bg = ctx.createRadialGradient(width * 0.5, height * 0.2, 20, width * 0.5, height * 0.55, width * 0.9)
+    bg.addColorStop(0, '#1a3d2e')
+    bg.addColorStop(0.45, '#0f241c')
+    bg.addColorStop(1, '#081510')
     ctx.fillStyle = bg
-    ctx.fillRect(0, 0, size, size)
+    ctx.fillRect(0, 0, width, height)
 
-    // board
-    roundRect(ctx, pad - 4, pad - 4, size - pad * 2 + 8, size - pad * 2 + 8, 18)
-    ctx.fillStyle = 'rgba(8, 24, 16, 0.92)'
+    // soft vignette lights
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.05)'
+    ctx.beginPath()
+    ctx.arc(width * 0.2, height * 0.15, 80, 0, Math.PI * 2)
     ctx.fill()
+    ctx.beginPath()
+    ctx.arc(width * 0.85, height * 0.75, 100, 0, Math.PI * 2)
+    ctx.fill()
+
+    // board plate
+    ctx.save()
+    ctx.shadowColor = 'rgba(0,0,0,0.45)'
+    ctx.shadowBlur = 24
+    roundRect(ctx, ox - 8, oy - 8, board + 16, board + 16, 22)
+    ctx.fillStyle = 'rgba(6, 20, 14, 0.88)'
+    ctx.fill()
+    ctx.restore()
+
+    roundRect(ctx, ox - 8, oy - 8, board + 16, board + 16, 22)
+    ctx.strokeStyle = 'rgba(110, 231, 183, 0.18)'
+    ctx.lineWidth = 1.5
+    ctx.stroke()
 
     for (let y = 0; y < GRID; y++) {
       for (let x = 0; x < GRID; x++) {
-        if ((x + y) % 2 === 0) continue
-        ctx.fillStyle = 'rgba(52, 211, 153, 0.05)'
-        ctx.fillRect(pad + x * cell, pad + y * cell, cell, cell)
+        const px = ox + x * cell
+        const py = oy + y * cell
+        if ((x + y) % 2 === 0) {
+          ctx.fillStyle = 'rgba(52, 211, 153, 0.045)'
+          ctx.fillRect(px, py, cell, cell)
+        }
       }
     }
 
-    // food
     if (state.food) {
-      const fx = pad + state.food.x * cell
-      const fy = pad + state.food.y * cell
+      const fx = ox + state.food.x * cell
+      const fy = oy + state.food.y * cell
       ctx.save()
       ctx.shadowColor = state.food.color
-      ctx.shadowBlur = 16
-      roundRect(ctx, fx + cell * 0.12, fy + cell * 0.12, cell * 0.76, cell * 0.76, cell * 0.28)
-      ctx.fillStyle = state.food.color
+      ctx.shadowBlur = 20
+      roundRect(ctx, fx + cell * 0.14, fy + cell * 0.14, cell * 0.72, cell * 0.72, cell * 0.28)
+      const foodFill = ctx.createLinearGradient(fx, fy, fx, fy + cell)
+      foodFill.addColorStop(0, '#fff7ed')
+      foodFill.addColorStop(0.35, state.food.color)
+      foodFill.addColorStop(1, '#111827')
+      ctx.fillStyle = foodFill
       ctx.fill()
       ctx.shadowBlur = 0
-      ctx.font = `${Math.floor(cell * 0.48)}px sans-serif`
+      ctx.font = `${Math.floor(cell * 0.46)}px sans-serif`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(state.food.icon, fx + cell / 2, fy + cell / 2 + 1)
       ctx.restore()
     }
 
-    // snake
     state.snake.forEach((part, index) => {
-      const x = pad + part.x * cell
-      const y = pad + part.y * cell
+      const x = ox + part.x * cell
+      const y = oy + part.y * cell
       const isHead = index === 0
       const t = index / Math.max(1, state.snake.length - 1)
       ctx.save()
-      ctx.shadowColor = isHead ? '#6ee7b7' : 'rgba(52, 211, 153, 0.35)'
-      ctx.shadowBlur = isHead ? 14 : 6
+      ctx.shadowColor = isHead ? '#86efac' : 'rgba(52, 211, 153, 0.28)'
+      ctx.shadowBlur = isHead ? 18 : 8
       roundRect(
         ctx,
-        x + cell * 0.08,
-        y + cell * 0.08,
-        cell * 0.84,
-        cell * 0.84,
-        isHead ? cell * 0.32 : cell * 0.26,
+        x + cell * 0.1,
+        y + cell * 0.1,
+        cell * 0.8,
+        cell * 0.8,
+        isHead ? cell * 0.34 : cell * 0.28,
       )
-      const fill = ctx.createLinearGradient(x, y, x, y + cell)
-      fill.addColorStop(0, isHead ? '#bbf7d0' : `rgba(110, 231, 183, ${0.95 - t * 0.35})`)
-      fill.addColorStop(1, isHead ? '#22c55e' : `rgba(16, 185, 129, ${0.95 - t * 0.25})`)
+      const fill = ctx.createLinearGradient(x, y, x + cell, y + cell)
+      fill.addColorStop(0, isHead ? '#dcfce7' : `rgba(134, 239, 172, ${0.95 - t * 0.4})`)
+      fill.addColorStop(1, isHead ? '#16a34a' : `rgba(21, 128, 61, ${0.95 - t * 0.2})`)
       ctx.fillStyle = fill
       ctx.fill()
+
       if (isHead) {
         ctx.fillStyle = '#052e16'
-        const eye = cell * 0.1
-        const ox = state.dir === 'left' ? -cell * 0.12 : state.dir === 'right' ? cell * 0.12 : 0
-        const oy = state.dir === 'up' ? -cell * 0.12 : state.dir === 'down' ? cell * 0.12 : 0
+        const eye = Math.max(2, cell * 0.09)
+        const oxEye = state.dir === 'left' ? -cell * 0.12 : state.dir === 'right' ? cell * 0.12 : 0
+        const oyEye = state.dir === 'up' ? -cell * 0.12 : state.dir === 'down' ? cell * 0.12 : 0
         ctx.beginPath()
-        ctx.arc(x + cell * 0.35 + ox, y + cell * 0.38 + oy, eye, 0, Math.PI * 2)
-        ctx.arc(x + cell * 0.65 + ox, y + cell * 0.38 + oy, eye, 0, Math.PI * 2)
+        ctx.arc(x + cell * 0.35 + oxEye, y + cell * 0.38 + oyEye, eye, 0, Math.PI * 2)
+        ctx.arc(x + cell * 0.65 + oxEye, y + cell * 0.38 + oyEye, eye, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = 'rgba(255,255,255,0.85)'
+        ctx.beginPath()
+        ctx.arc(x + cell * 0.33 + oxEye, y + cell * 0.35 + oyEye, eye * 0.35, 0, Math.PI * 2)
+        ctx.arc(x + cell * 0.63 + oxEye, y + cell * 0.35 + oyEye, eye * 0.35, 0, Math.PI * 2)
         ctx.fill()
       }
       ctx.restore()
@@ -154,7 +193,7 @@ export default function SnakeGame() {
       if (result === 'eat') {
         playPop()
         if (stateRef.current.eaten % 4 === 0) playMatch()
-      } else if (result === 'wall' || result === 'self') {
+      } else if (result === 'self') {
         playCheer()
         setPhase('over')
         syncHud()
@@ -178,7 +217,8 @@ export default function SnakeGame() {
     setPhase('playing')
   }
 
-  const steer = (dir) => {
+  const steer = (dir) => (event) => {
+    event.preventDefault()
     const state = stateRef.current
     if (!state?.alive || phaseRef.current !== 'playing') return
     queueDir(state, dir)
@@ -206,7 +246,7 @@ export default function SnakeGame() {
       const dir = map[event.key] || map[event.key.toLowerCase()]
       if (!dir) return
       event.preventDefault()
-      steer(dir)
+      queueDir(stateRef.current, dir)
     }
     window.addEventListener('resize', onResize)
     window.addEventListener('keydown', onKey)
@@ -224,51 +264,51 @@ export default function SnakeGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, run])
 
-  let actions = null
-  if (phase === 'playing') {
-    actions = (
-      <div className="snake-pad" dir="ltr">
-        <button type="button" className="snake-btn" aria-label="بالا" onPointerDown={() => steer('up')}>
-          ▲
-        </button>
-        <div className="snake-pad__mid">
-          <button type="button" className="snake-btn" aria-label="چپ" onPointerDown={() => steer('left')}>
-            ◀
-          </button>
-          <button type="button" className="snake-btn" aria-label="راست" onPointerDown={() => steer('right')}>
-            ▶
-          </button>
-        </div>
-        <button type="button" className="snake-btn" aria-label="پایین" onPointerDown={() => steer('down')}>
-          ▼
-        </button>
-      </div>
-    )
-  }
-
   return (
-    <GameShell title="مار" emoji="🐍" scoreLabel="امتیاز" score={hud.score} actions={actions}>
-      <div className="snake">
+    <GameShell
+      title="مار"
+      emoji="🐍"
+      scoreLabel="امتیاز"
+      score={hud.score}
+      actions={null}
+    >
+      <div className={`snake ${phase === 'playing' ? 'snake--live' : ''}`}>
         {phase === 'playing' ? (
-          <>
-            <div className="blast-hud">
-              <div className="blast-chip">
+          <div className="snake-arena" ref={wrapRef}>
+            <canvas ref={canvasRef} className="snake-canvas" />
+
+            <div className="snake-glass-hud">
+              <div className="glass-chip">
                 <span>طول</span>
                 <strong>{hud.length}</strong>
               </div>
-              <div className="blast-chip">
+              <div className="glass-chip">
                 <span>غذا</span>
                 <strong>{hud.eaten}</strong>
               </div>
-              <div className="blast-chip blast-chip--score">
+              <div className="glass-chip glass-chip--score">
                 <span>امتیاز</span>
                 <strong>{hud.score}</strong>
               </div>
             </div>
-            <div className="snake-stage" ref={wrapRef}>
-              <canvas ref={canvasRef} className="snake-canvas" />
+
+            <div className="snake-glass-pad" dir="ltr">
+              <button type="button" className="glass-btn" aria-label="بالا" onPointerDown={steer('up')}>
+                ▲
+              </button>
+              <div className="snake-glass-pad__row">
+                <button type="button" className="glass-btn" aria-label="چپ" onPointerDown={steer('left')}>
+                  ◀
+                </button>
+                <button type="button" className="glass-btn" aria-label="راست" onPointerDown={steer('right')}>
+                  ▶
+                </button>
+              </div>
+              <button type="button" className="glass-btn" aria-label="پایین" onPointerDown={steer('down')}>
+                ▼
+              </button>
             </div>
-          </>
+          </div>
         ) : null}
 
         {phase === 'intro' && (

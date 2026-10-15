@@ -1566,27 +1566,151 @@ a {
   position: relative;
 }
 
+.snake--live {
+  height: 100%;
+  min-height: 100%;
+}
+
+.game-shell:has(.snake--live) {
+  position: relative;
+  background: #081510;
+}
+
+.game-shell:has(.snake--live) .game-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 8;
+  background: linear-gradient(180deg, rgba(8, 21, 16, 0.88), transparent);
+  padding-top: 12px;
+}
+
+.game-shell:has(.snake--live) .score-pill,
+.game-shell:has(.snake--live) .icon-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.game-shell:has(.snake--live) .game-stage {
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.game-shell:has(.snake--live) .game-actions {
+  display: none;
+  padding: 0;
+}
+
 .snake-start {
   margin-top: 8px;
   max-width: 280px;
 }
 
-.snake-stage {
+.snake-arena {
+  position: relative;
   flex: 1 1 auto;
-  min-height: 280px;
-  display: grid;
-  place-items: center;
-  border-radius: 22px;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
   overflow: hidden;
-  background: linear-gradient(180deg, #163024, #102018);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
 }
 
 .snake-canvas {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   touch-action: none;
+}
+
+.snake-glass-hud {
+  position: absolute;
+  top: 54px;
+  left: 10px;
+  right: 10px;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  pointer-events: none;
+}
+
+.glass-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+.glass-chip span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.glass-chip strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.glass-chip--score strong {
+  color: #86efac;
+}
+
+.snake-glass-pad {
+  position: absolute;
+  left: 50%;
+  bottom: calc(18px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(220px, calc(100% - 28px));
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.snake-glass-pad__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.glass-btn {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: 1.15rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.glass-btn:active {
+  transform: scale(0.96);
+  background: linear-gradient(180deg, rgba(134, 239, 172, 0.35), rgba(52, 211, 153, 0.18));
 }
 
 .snake-intro {
@@ -1619,42 +1743,6 @@ a {
   margin-inline-start: 10px;
   font-size: 1.7rem;
   animation: balloon-bob 1.6s ease-in-out infinite;
-}
-
-.snake-pad {
-  display: grid;
-  gap: 8px;
-  justify-items: center;
-}
-
-.snake-pad__mid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
-}
-
-.snake-btn {
-  width: 100%;
-  min-height: 52px;
-  max-width: 180px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-size: 1.2rem;
-  cursor: pointer;
-  touch-action: manipulation;
-  user-select: none;
-}
-
-.snake-pad__mid .snake-btn {
-  max-width: none;
-}
-
-.snake-btn:active {
-  transform: scale(0.97);
-  background: rgba(52, 211, 153, 0.28);
 }
 
 @media (min-width: 431px) {
