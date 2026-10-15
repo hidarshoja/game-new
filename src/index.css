@@ -1556,7 +1556,8 @@ a {
 .box-crystal { background: linear-gradient(180deg, #67e8f9, #22d3ee); }
 
 /* ========== SNAKE ========== */
-.snake {
+.snake,
+.arcade {
   flex: 1 1 auto;
   width: 100%;
   min-height: 0;
@@ -1566,17 +1567,17 @@ a {
   position: relative;
 }
 
-.snake--live {
+.snake--live, .arcade--live {
   height: 100%;
   min-height: 100%;
 }
 
-.game-shell:has(.snake--live) {
+.game-shell:has(.snake--live, .arcade--live) {
   position: relative;
   background: #081510;
 }
 
-.game-shell:has(.snake--live) .game-topbar {
+.game-shell:has(.snake--live, .arcade--live) .game-topbar {
   position: absolute;
   top: 0;
   left: 0;
@@ -1586,22 +1587,22 @@ a {
   padding-top: 12px;
 }
 
-.game-shell:has(.snake--live) .score-pill,
-.game-shell:has(.snake--live) .icon-btn {
+.game-shell:has(.snake--live, .arcade--live) .score-pill,
+.game-shell:has(.snake--live, .arcade--live) .icon-btn {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-.game-shell:has(.snake--live) .game-stage {
+.game-shell:has(.snake--live, .arcade--live) .game-stage {
   padding: 0;
   flex: 1;
   min-height: 0;
   height: 100%;
 }
 
-.game-shell:has(.snake--live) .game-actions {
+.game-shell:has(.snake--live, .arcade--live) .game-actions {
   display: none;
   padding: 0;
 }
@@ -1747,6 +1748,65 @@ a {
   margin-inline-start: 10px;
   font-size: 1.7rem;
   animation: balloon-bob 1.6s ease-in-out infinite;
+}
+
+.game-shell:has(.crossy-game.arcade--live) {
+  background: linear-gradient(180deg, #67b7ef, #c8efb0);
+}
+
+.game-shell:has(.crossy-game.arcade--live) .game-topbar {
+  background: linear-gradient(180deg, rgba(15, 60, 110, 0.55), transparent);
+}
+
+.game-shell:has(.metro-game.arcade--live) {
+  background: #070b16;
+}
+
+.game-shell:has(.metro-game.arcade--live) .game-topbar {
+  background: linear-gradient(180deg, rgba(7, 11, 22, 0.9), transparent);
+}
+
+.crossy-intro,
+.metro-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  min-height: 72px;
+}
+
+.crossy-intro__chick {
+  font-size: 2.6rem;
+  animation: balloon-bob 1.4s ease-in-out infinite;
+}
+
+.crossy-intro__tree {
+  width: 28px;
+  height: 46px;
+  border-radius: 16px 16px 8px 8px;
+  background: linear-gradient(#22c55e, #166534);
+  box-shadow: inset 0 -12px 0 #14532d;
+}
+
+.crossy-intro__car {
+  width: 54px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f87171, #dc2626);
+  box-shadow: inset 0 8px 0 rgba(255, 255, 255, 0.45);
+}
+
+.metro-intro span {
+  width: 18px;
+  height: 54px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #22d3ee, #1d4ed8);
+  box-shadow: 0 8px 16px rgba(34, 211, 238, 0.35);
+}
+
+.metro-intro span:nth-child(2) {
+  height: 72px;
+  background: linear-gradient(180deg, #facc15, #f97316);
 }
 
 @media (min-width: 431px) {
