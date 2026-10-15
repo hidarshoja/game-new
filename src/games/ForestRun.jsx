@@ -120,9 +120,9 @@ export default function ForestRun() {
         {phase === 'playing' && (
           <div className="snake-arena" ref={wrapRef}>
             <canvas ref={canvasRef} className="snake-canvas" />
-            <div className="snake-glass-hud">
-              <div className="glass-chip"><span>میوه</span><strong>{hud.fruits}</strong></div>
-              <div className="glass-chip glass-chip--score"><span>امتیاز</span><strong>{hud.score}</strong></div>
+            <div className="star-hud forest-hud">
+              <div className="star-hud__chip"><span>میوه</span><strong>{hud.fruits}</strong></div>
+              <div className="star-hud__chip"><span>امتیاز</span><strong>{hud.score}</strong></div>
             </div>
             <div className="snake-glass-pad" dir="ltr">
               <button type="button" className="glass-btn glass-btn--side" onPointerDown={() => steerForest(stateRef.current, 'left') && playFlip()} aria-label="چپ">◀</button>
@@ -222,24 +222,149 @@ function drawForest(canvas, state) {
     ctx.fillText(item.emoji, p.x, p.y - (item.kind === 'animal' && item.type === 'high' ? 28 * p.s : 0))
   }
 
-  const hero = project(w, h, state.visualLane, 0.2)
-  const jumpY = hero.y - state.jump * 52
-  const squash = state.slide > 0 ? 0.55 : 1
+  // بالاتر از دکمه‌ها تا اسکیت کامل دیده شود
+  const hero = project(w, h, state.visualLane, 0.42)
+  drawSkater(ctx, hero, state)
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2)
+  ctx.beginPath()
+  ctx.moveTo(x + radius, y)
+  ctx.arcTo(x + w, y, x + w, y + h, radius)
+  ctx.arcTo(x + w, y + h, x, y + h, radius)
+  ctx.arcTo(x, y + h, x, y, radius)
+  ctx.arcTo(x, y, x + w, y, radius)
+  ctx.closePath()
+}
+
+function drawSkater(ctx, p, state) {
+  const s = Math.max(52, p.s * 92)
+  const jump = state.jump * s * 1.1
+  const slide = state.slide > 0
+  const run = state.time * 10.5
+  const bob = slide ? 0 : Math.sin(run) * s * 0.03
+  const step = slide ? 0 : Math.sin(run)
+  const x = p.x
+  const groundY = p.y - s * 0.06
+  const y = groundY - jump + bob
+
   ctx.save()
-  ctx.translate(hero.x, jumpY)
-  ctx.scale(1, squash)
-  ctx.fillStyle = '#f97316'
+  ctx.fillStyle = 'rgba(0,0,0,0.34)'
   ctx.beginPath()
-  ctx.arc(0, -18, 16, 0, Math.PI * 2)
+  ctx.ellipse(x, groundY + s * 0.48, s * (slide ? 0.7 : 0.55), s * 0.09, 0, 0, Math.PI * 2)
   ctx.fill()
-  ctx.fillStyle = '#fdba74'
-  ctx.beginPath()
-  ctx.arc(0, -34, 11, 0, Math.PI * 2)
+
+  ctx.translate(x, y)
+  if (slide) ctx.scale(1.16, 0.55)
+
+  // اسکیت‌بورد بزرگ و مشخص
+  ctx.fillStyle = '#312e81'
+  roundRect(ctx, -s * 0.58, s * 0.32, s * 1.16, s * 0.13, 10)
   ctx.fill()
+  ctx.fillStyle = '#f59e0b'
+  roundRect(ctx, -s * 0.38, s * 0.345, s * 0.76, s * 0.07, 5)
+  ctx.fill()
+  ctx.fillStyle = '#64748b'
+  ctx.fillRect(-s * 0.36, s * 0.4, s * 0.12, s * 0.045)
+  ctx.fillRect(s * 0.24, s * 0.4, s * 0.12, s * 0.045)
   ctx.fillStyle = '#0f172a'
   ctx.beginPath()
-  ctx.arc(-4, -36, 2, 0, Math.PI * 2)
-  ctx.arc(4, -36, 2, 0, Math.PI * 2)
+  ctx.arc(-s * 0.34, s * 0.5, s * 0.1, 0, Math.PI * 2)
+  ctx.arc(s * 0.34, s * 0.5, s * 0.1, 0, Math.PI * 2)
   ctx.fill()
+  ctx.fillStyle = '#cbd5e1'
+  ctx.beginPath()
+  ctx.arc(-s * 0.34, s * 0.5, s * 0.04, 0, Math.PI * 2)
+  ctx.arc(s * 0.34, s * 0.5, s * 0.04, 0, Math.PI * 2)
+  ctx.fill()
+
+  // پاها — یکی جلو یکی عقب مثل راه رفتن روی اسکیت
+  const front = step * s * 0.14
+  const back = -step * s * 0.14
+  ctx.strokeStyle = '#1e3a8a'
+  ctx.lineWidth = Math.max(6, s * 0.12)
+  ctx.lineCap = 'round'
+  ctx.beginPath()
+  ctx.moveTo(-s * 0.06, s * 0.02)
+  ctx.lineTo(-s * 0.1 + front * 0.3, s * 0.14)
+  ctx.lineTo(-s * 0.22 + front, s * 0.28)
+  ctx.moveTo(s * 0.08, s * 0.02)
+  ctx.lineTo(s * 0.14 + back * 0.25, s * 0.15)
+  ctx.lineTo(s * 0.26 + back, s * 0.28)
+  ctx.stroke()
+  ctx.fillStyle = '#111827'
+  ctx.beginPath()
+  ctx.ellipse(-s * 0.24 + front, s * 0.3, s * 0.13, s * 0.055, 0.35, 0, Math.PI * 2)
+  ctx.ellipse(s * 0.28 + back, s * 0.3, s * 0.13, s * 0.055, -0.2, 0, Math.PI * 2)
+  ctx.fill()
+
+  // شلوار / لگن
+  ctx.fillStyle = '#1d4ed8'
+  roundRect(ctx, -s * 0.16, -s * 0.04, s * 0.32, s * 0.14, 8)
+  ctx.fill()
+
+  // بالاتنه
+  const shirt = ctx.createLinearGradient(-s * 0.18, -s * 0.42, s * 0.18, s * 0.02)
+  shirt.addColorStop(0, '#fb923c')
+  shirt.addColorStop(1, '#9a3412')
+  ctx.fillStyle = shirt
+  roundRect(ctx, -s * 0.18, -s * 0.4, s * 0.36, s * 0.4, 10)
+  ctx.fill()
+  ctx.fillStyle = '#fff7ed'
+  roundRect(ctx, -s * 0.07, -s * 0.3, s * 0.14, s * 0.16, 3)
+  ctx.fill()
+
+  // دست‌ها در حال تاب خوردن
+  const arm = step * s * 0.2
+  ctx.strokeStyle = '#ea580c'
+  ctx.lineWidth = Math.max(5, s * 0.095)
+  ctx.lineCap = 'round'
+  ctx.beginPath()
+  ctx.moveTo(-s * 0.16, -s * 0.3)
+  ctx.quadraticCurveTo(-s * 0.38, -s * 0.12 + arm, -s * 0.3, s * 0.04 + arm * 0.4)
+  ctx.moveTo(s * 0.16, -s * 0.3)
+  ctx.quadraticCurveTo(s * 0.4, -s * 0.14 - arm, s * 0.32, s * 0.02 - arm * 0.4)
+  ctx.stroke()
+  ctx.fillStyle = '#fcd34d'
+  ctx.beginPath()
+  ctx.arc(-s * 0.3, s * 0.04 + arm * 0.4, s * 0.06, 0, Math.PI * 2)
+  ctx.arc(s * 0.32, s * 0.02 - arm * 0.4, s * 0.06, 0, Math.PI * 2)
+  ctx.fill()
+
+  // گردن
+  ctx.fillStyle = '#e8a86a'
+  ctx.fillRect(-s * 0.05, -s * 0.48, s * 0.1, s * 0.1)
+
+  // سر (نسبت انسانی‌تر، بدون عینک بامزه)
+  const face = ctx.createRadialGradient(-s * 0.04, -s * 0.58, 2, 0, -s * 0.54, s * 0.18)
+  face.addColorStop(0, '#ffe4c4')
+  face.addColorStop(1, '#d97706')
+  ctx.fillStyle = face
+  ctx.beginPath()
+  ctx.arc(0, -s * 0.56, s * 0.155, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.fillStyle = '#1f2937'
+  ctx.beginPath()
+  ctx.ellipse(0, -s * 0.66, s * 0.15, s * 0.09, 0, Math.PI, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.moveTo(-s * 0.14, -s * 0.58)
+  ctx.quadraticCurveTo(-s * 0.18, -s * 0.48, -s * 0.1, -s * 0.46)
+  ctx.quadraticCurveTo(-s * 0.06, -s * 0.56, -s * 0.14, -s * 0.58)
+  ctx.fill()
+
+  ctx.fillStyle = '#111827'
+  ctx.beginPath()
+  ctx.arc(-s * 0.05, -s * 0.57, s * 0.022, 0, Math.PI * 2)
+  ctx.arc(s * 0.05, -s * 0.57, s * 0.022, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.strokeStyle = '#92400e'
+  ctx.lineWidth = Math.max(1.5, s * 0.02)
+  ctx.beginPath()
+  ctx.arc(0, -s * 0.5, s * 0.045, 0.25, Math.PI - 0.25)
+  ctx.stroke()
+
   ctx.restore()
 }

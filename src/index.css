@@ -2436,6 +2436,66 @@ a {
   background: #14532d;
 }
 
+.star-hud {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  bottom: auto;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.star-hud__chip {
+  min-width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(253, 224, 71, 0.35);
+  color: #fff;
+  backdrop-filter: blur(12px);
+}
+
+.star-hud__chip span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.star-hud__chip strong {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.star-hud__chip--score strong {
+  color: #86efac;
+}
+
+.forest-hud {
+  bottom: auto;
+  top: 10px;
+}
+
+.forest-hud .star-hud__chip {
+  background: rgba(15, 23, 42, 0.82);
+  border-color: rgba(187, 247, 208, 0.4);
+}
+
+.forest-hud .star-hud__chip strong {
+  color: #bbf7d0;
+}
+
+.forest--live .glass-chip strong {
+  color: #bbf7d0;
+}
+
 .game-shell:has(.star-pad--live) .game-stage,
 .game-shell:has(.forest--live) .game-stage {
   padding: 0;

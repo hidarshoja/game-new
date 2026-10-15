@@ -108,9 +108,15 @@ export default function StarPaddle() {
         {phase === 'playing' && (
           <div className="snake-arena" ref={wrapRef}>
             <canvas ref={canvasRef} className="snake-canvas" />
-            <div className="snake-glass-hud">
-              <div className="glass-chip"><span>موج</span><strong>{hud.wave}</strong></div>
-              <div className="glass-chip glass-chip--score"><span>امتیاز</span><strong>{hud.score}</strong></div>
+            <div className="star-hud">
+              <div className="star-hud__chip">
+                <span>موج</span>
+                <strong>{hud.wave}</strong>
+              </div>
+              <div className="star-hud__chip star-hud__chip--score">
+                <span>امتیاز</span>
+                <strong>{hud.score}</strong>
+              </div>
             </div>
           </div>
         )}
@@ -151,7 +157,8 @@ function step(state, dt, w, h, pointerX) {
   const pad = 14
   const cellW = (w - pad * 2 - gap * (COLS - 1)) / COLS
   const cellH = 28
-  const top = 18
+  // فاصله از HUD امتیاز/موج بالای صفحه
+  const top = 72
 
   for (const prize of state.prizes) {
     prize.y += 140 * dt
@@ -226,7 +233,7 @@ function draw(canvas, state, w, h) {
   const pad = 14
   const cellW = (w - pad * 2 - gap * (COLS - 1)) / COLS
   const cellH = 28
-  const top = 18
+  const top = 72
   for (const brick of state.bricks) {
     const x = pad + brick.col * (cellW + gap)
     const y = top + brick.row * (cellH + gap)
