@@ -2439,7 +2439,7 @@ a {
 }
 
 .game-shell:has(.beast-hunt--live) {
-  background: #0369a1;
+  background: #0f172a;
 }
 
 .star-hud {
@@ -2539,22 +2539,57 @@ a {
   text-align: center;
 }
 
+.beast-ammo {
+  position: absolute;
+  left: 50%;
+  bottom: calc(96px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 18px;
+  pointer-events: none;
+}
+
+.beast-ammo__bolt {
+  width: 10px;
+  height: 22px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(253, 224, 71, 0.25);
+}
+
+.beast-ammo__bolt.is-on {
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.55);
+}
+
+.beast-ammo__reload {
+  color: #fde68a;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+}
+
 .beast-fire {
   position: absolute;
   left: 50%;
   bottom: calc(42px + var(--safe-bottom));
   transform: translateX(-50%);
   z-index: 6;
-  min-width: 140px;
+  min-width: 148px;
   padding: 14px 22px;
-  border: 0;
+  border: 1px solid rgba(253, 224, 71, 0.35);
   border-radius: 999px;
-  background: linear-gradient(180deg, #fbbf24, #ea580c);
+  background: linear-gradient(180deg, #fbbf24, #c2410c);
   color: #fff;
   font: inherit;
   font-weight: 800;
   font-size: 1.05rem;
-  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.4);
+  box-shadow: 0 12px 28px rgba(194, 65, 12, 0.45);
   touch-action: manipulation;
 }
 
@@ -2569,11 +2604,16 @@ a {
   bottom: calc(10px + var(--safe-bottom));
   margin: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.74rem;
   font-weight: 700;
   pointer-events: none;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
+}
+
+.beast-hud .star-hud__chip {
+  background: rgba(15, 23, 42, 0.82);
+  border-color: rgba(125, 211, 252, 0.35);
 }
 
 .beast-hud .star-hud__chip strong {
