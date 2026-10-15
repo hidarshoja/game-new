@@ -2413,7 +2413,8 @@ a {
 .star-pad,
 .forest,
 .fruit-math,
-.beast-hunt {
+.beast-hunt,
+.rock-duel {
   position: relative;
   flex: 1;
   min-height: 0;
@@ -2425,7 +2426,8 @@ a {
 
 .star-pad--live,
 .forest--live,
-.beast-hunt--live {
+.beast-hunt--live,
+.rock-duel--live {
   height: 100%;
   overflow: hidden;
 }
@@ -2440,6 +2442,10 @@ a {
 
 .game-shell:has(.beast-hunt--live) {
   background: #0f172a;
+}
+
+.game-shell:has(.rock-duel--live) {
+  background: #1e293b;
 }
 
 .star-hud {
@@ -2504,14 +2510,16 @@ a {
 
 .game-shell:has(.star-pad--live) .game-stage,
 .game-shell:has(.forest--live) .game-stage,
-.game-shell:has(.beast-hunt--live) .game-stage {
+.game-shell:has(.beast-hunt--live) .game-stage,
+.game-shell:has(.rock-duel--live) .game-stage {
   padding: 0;
   height: 100%;
 }
 
 .game-shell:has(.star-pad--live) .game-actions,
 .game-shell:has(.forest--live) .game-actions,
-.game-shell:has(.beast-hunt--live) .game-actions {
+.game-shell:has(.beast-hunt--live) .game-actions,
+.game-shell:has(.rock-duel--live) .game-actions {
   display: none;
 }
 
@@ -2618,6 +2626,30 @@ a {
 
 .beast-hud .star-hud__chip strong {
   font-size: 0.95rem;
+}
+
+.duel-pad {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(14px + var(--safe-bottom));
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  gap: 10px;
+  align-items: center;
+}
+
+.duel-fire {
+  position: static;
+  transform: none;
+  width: 100%;
+  min-width: 0;
+  bottom: auto;
+}
+
+.duel-fire:active {
+  transform: scale(0.96);
 }
 
 .math-top {

@@ -18,6 +18,7 @@ import StarPaddle from './games/StarPaddle'
 import ForestRun from './games/ForestRun'
 import FruitMath from './games/FruitMath'
 import BeastHunt from './games/BeastHunt'
+import RockDuel from './games/RockDuel'
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/games/forest" element={<ForestRun />} />
           <Route path="/games/fruit-math" element={<FruitMath />} />
           <Route path="/games/beast-hunt" element={<BeastHunt />} />
+          <Route path="/games/rock-duel" element={<RockDuel />} />
           <Route path="/games/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
