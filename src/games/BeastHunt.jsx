@@ -64,14 +64,14 @@ export default function BeastHunt() {
     const aimFromPointer = (w, h) => {
       const hero = heroPos(w, h)
       const p = pointerRef.current
-      // همیشه کمی به سمت حیوان قفل می‌شود تا بازی روان باشد
-      let tx = p.x || w * 0.7
+      // کمک نشانه کم — باید خودت دنبال جاخالی بروی
+      let tx = p.x || w * 0.72
       let ty = p.y || h * 0.58
-      if (state.beast && !state.beast.dead) {
+      if (state.beast && !state.beast.dead && !p.down) {
         const by = state.beast.drawY || h * 0.58
         const bx = state.beast.x - 24
-        tx = tx * 0.25 + bx * 0.75
-        ty = ty * 0.25 + by * 0.75
+        tx = tx * 0.7 + bx * 0.3
+        ty = ty * 0.7 + by * 0.3
       }
       const dx = tx - hero.x
       const dy = ty - (hero.y - 22)
@@ -109,19 +109,20 @@ export default function BeastHunt() {
       if (!booted) boot()
       aimFromPointer(w, h)
 
-      if (state?.alive && state.beast && phaseRef.current === 'playing') {
-        if (pointerRef.current.down && state.cooldown <= 0) {
+      if ((state?.alive || state?.eaten) && state.beast && phaseRef.current === 'playing') {
+        if (state.alive && !state.eaten && pointerRef.current.down && state.cooldown <= 0) {
           if (shoot(state, hero.x, hero.y)) playPop()
         }
-        const result = updateHunt(state, dt, w, h, hero.x)
+        const result = updateHunt(state, dt, w, h, hero.x, hero.y)
         if (result.hit) playFlip()
         if (result.event === 'kill') playCheer()
+        if (result.event === 'eaten') playFlip()
         if (result.event === 'lost') {
           playCheer()
           setHud((prev) => ({ ...prev, score: state.score }))
           phaseRef.current = 'over'
           setPhase('over')
-        } else {
+        } else if (state.beast) {
           const key = state.score * 1000 + state.beast.hp + state.level * 100 + state.stage
           if (key !== shown) {
             shown = key
@@ -165,7 +166,7 @@ export default function BeastHunt() {
             <div className="beast-intro" aria-hidden="true">🏹 🐍 🦁 🐉</div>
             <h2 className="level-panel__title">نشانه بگیر و قبل از رسیدن حیوان بزن</h2>
             <p className="level-panel__meta">
-              مار ۲ تیر · شیر ۸ تیر · اژدها ۱۰ تیر. بعد از ۱۰ مرحله، لول بعد سخت‌تر می‌شود.
+              حیوان‌ها جاخالی می‌دهند. اژدها آتش می‌ریزد. اگر برسد، شکارچی را می‌بلعد.
             </p>
             <p className="beast-roster-line">
               {BEASTS.map((b) => `${b.name} ${b.hits}`).join(' · ')}
@@ -201,9 +202,11 @@ export default function BeastHunt() {
                 const rect = wrapRef.current.getBoundingClientRect()
                 const hero = { x: Math.max(48, rect.width * 0.14), y: rect.height * 0.62 }
                 const st = stateRef.current
-                if (st?.beast) {
+                // دکمه شلیک به سمت تقریبی حیوان، ولی جاخالی را باید خودت جبران کنی با لمس صفحه
+                if (st?.beast && !st.eaten) {
                   const by = st.beast.drawY || rect.height * 0.58
-                  st.aim = Math.atan2(by - (hero.y - 22), Math.max(12, st.beast.x - 24 - hero.x))
+                  const angle = Math.atan2(by - (hero.y - 22), Math.max(12, st.beast.x - 24 - hero.x))
+                  st.aim = angle * 0.85 + st.aim * 0.15
                 }
                 if (shoot(st, hero.x, hero.y)) playPop()
               }}
@@ -291,10 +294,17 @@ function drawScene(canvas, state, w, h, hero) {
   ctx.ellipse(hero.x, hero.y + 48, 42, 12, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  drawHero(ctx, hero.x, hero.y, state.aim, state.cooldown)
+  const eating = state.eaten
+  if (!eating) {
+    drawHero(ctx, hero.x, hero.y, state.aim, state.cooldown)
+  }
 
   if (state.beast) {
     drawBeast(ctx, state.beast, state.beast.drawY || h * 0.58)
+  }
+
+  if (eating && state.beast) {
+    drawHeroBeingEaten(ctx, hero, state.beast, Math.min(1, eating.t / 0.9), eating.byFire)
   }
 
   for (const b of state.bullets) {
@@ -312,6 +322,10 @@ function drawScene(canvas, state, w, h, hero) {
     ctx.fillStyle = '#ef4444'
     ctx.fillRect(-10, -2, 6, 4)
     ctx.restore()
+  }
+
+  for (const f of state.flames || []) {
+    drawFlame(ctx, f)
   }
 
   for (const p of state.particles) {
@@ -530,13 +544,63 @@ function drawBeast(ctx, beast, y) {
       drawTiger(ctx)
       break
     case 'dragon':
-      drawDragon(ctx, beast.bob)
+      drawDragon(ctx, beast.bob, beast.chomp || 0)
       break
     default:
       drawLion(ctx)
   }
 
   ctx.filter = 'none'
+  ctx.restore()
+}
+
+function drawFlame(ctx, f) {
+  ctx.save()
+  ctx.translate(f.x, f.y)
+  const g = ctx.createRadialGradient(0, 0, 1, 0, 0, f.r)
+  g.addColorStop(0, '#fff7ed')
+  g.addColorStop(0.35, '#fbbf24')
+  g.addColorStop(0.7, '#ea580c')
+  g.addColorStop(1, 'rgba(127,29,29,0)')
+  ctx.fillStyle = g
+  ctx.beginPath()
+  ctx.arc(0, 0, f.r, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#fecaca'
+  ctx.beginPath()
+  ctx.ellipse(-f.r * 0.2, 0, f.r * 0.55, f.r * 0.35, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+}
+
+function drawHeroBeingEaten(ctx, hero, beast, progress, byFire) {
+  const mouthX = beast.x - (beast.id === 'dragon' ? 90 : 50)
+  const mouthY = (beast.drawY || hero.y) + (beast.id === 'dragon' ? -8 : 4)
+  const x = hero.x + (mouthX - hero.x) * progress
+  const y = hero.y + (mouthY - hero.y) * progress
+  const s = 1 - progress * 0.75
+  ctx.save()
+  ctx.globalAlpha = Math.max(0.12, 1 - progress * 0.9)
+  ctx.translate(x, y)
+  ctx.scale(s, s)
+  if (byFire) {
+    ctx.fillStyle = '#fb923c'
+    ctx.beginPath()
+    ctx.arc(0, -20, 22 + progress * 18, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.fillStyle = '#0ea5e9'
+  roundRect(ctx, -14, -28, 28, 36, 8)
+  ctx.fill()
+  ctx.fillStyle = '#fcd34d'
+  ctx.beginPath()
+  ctx.arc(0, -40, 12, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#111'
+  ctx.beginPath()
+  ctx.arc(-4, -42, 2, 0, Math.PI * 2)
+  ctx.arc(4, -42, 2, 0, Math.PI * 2)
+  ctx.fill()
   ctx.restore()
 }
 
@@ -968,8 +1032,9 @@ function drawTiger(ctx) {
   ctx.stroke()
 }
 
-function drawDragon(ctx, bob) {
+function drawDragon(ctx, bob, chomp = 0) {
   const flap = Math.sin(bob * 5) * 10
+  const jaw = 0.35 + chomp * 0.9
   // بال‌ها
   ctx.fillStyle = '#6d28d9'
   ctx.beginPath()
@@ -1014,18 +1079,34 @@ function drawDragon(ctx, bob) {
   ctx.lineTo(-48, -46)
   ctx.lineTo(-44, -24)
   ctx.fill()
-  // دهان باز
+  // دهان باز + آتش داخل گلو
+  const open = 10 + jaw * 10
   ctx.fillStyle = '#4c1d95'
   ctx.beginPath()
-  ctx.ellipse(-88, -8, 18, 10, 0, 0, Math.PI * 2)
+  ctx.ellipse(-88, -8, 20, open, 0, 0, Math.PI * 2)
   ctx.fill()
-  ctx.fillStyle = '#9f1239'
+  const throat = ctx.createRadialGradient(-96, -6, 2, -92, -6, 16)
+  throat.addColorStop(0, '#fff7ed')
+  throat.addColorStop(0.4, '#fb923c')
+  throat.addColorStop(1, '#9f1239')
+  ctx.fillStyle = throat
   ctx.beginPath()
-  ctx.ellipse(-92, -6, 12, 6, 0, 0, Math.PI * 2)
+  ctx.ellipse(-94, -6, 14, open * 0.7, 0, 0, Math.PI * 2)
   ctx.fill()
   ctx.fillStyle = '#fef3c7'
-  ctx.fillRect(-98, -12, 5, 5)
-  ctx.fillRect(-90, -12, 5, 5)
+  ctx.fillRect(-100, -8 - open * 0.55, 6, 6)
+  ctx.fillRect(-90, -8 - open * 0.55, 6, 6)
+  // شعله کوتاه بیرون دهان وقتی chomp بالاست
+  if (chomp > 0.2) {
+    const blast = ctx.createRadialGradient(-110, -6, 2, -118, -6, 28)
+    blast.addColorStop(0, '#fffbeb')
+    blast.addColorStop(0.45, '#f97316')
+    blast.addColorStop(1, 'rgba(234,88,12,0)')
+    ctx.fillStyle = blast
+    ctx.beginPath()
+    ctx.ellipse(-118, -6, 22 + chomp * 16, 10 + chomp * 8, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
   // چشم
   ctx.fillStyle = '#fde047'
   ctx.beginPath()
