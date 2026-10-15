@@ -17,6 +17,7 @@ import AnimalSounds from './games/AnimalSounds'
 import StarPaddle from './games/StarPaddle'
 import ForestRun from './games/ForestRun'
 import FruitMath from './games/FruitMath'
+import BeastHunt from './games/BeastHunt'
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/games/star-paddle" element={<StarPaddle />} />
           <Route path="/games/forest" element={<ForestRun />} />
           <Route path="/games/fruit-math" element={<FruitMath />} />
+          <Route path="/games/beast-hunt" element={<BeastHunt />} />
           <Route path="/games/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

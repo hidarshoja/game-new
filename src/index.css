@@ -2412,7 +2412,8 @@ a {
 
 .star-pad,
 .forest,
-.fruit-math {
+.fruit-math,
+.beast-hunt {
   position: relative;
   flex: 1;
   min-height: 0;
@@ -2423,7 +2424,8 @@ a {
 }
 
 .star-pad--live,
-.forest--live {
+.forest--live,
+.beast-hunt--live {
   height: 100%;
   overflow: hidden;
 }
@@ -2434,6 +2436,10 @@ a {
 
 .game-shell:has(.forest--live) {
   background: #14532d;
+}
+
+.game-shell:has(.beast-hunt--live) {
+  background: #0369a1;
 }
 
 .star-hud {
@@ -2497,21 +2503,58 @@ a {
 }
 
 .game-shell:has(.star-pad--live) .game-stage,
-.game-shell:has(.forest--live) .game-stage {
+.game-shell:has(.forest--live) .game-stage,
+.game-shell:has(.beast-hunt--live) .game-stage {
   padding: 0;
   height: 100%;
 }
 
 .game-shell:has(.star-pad--live) .game-actions,
-.game-shell:has(.forest--live) .game-actions {
+.game-shell:has(.forest--live) .game-actions,
+.game-shell:has(.beast-hunt--live) .game-actions {
   display: none;
 }
 
 .star-intro,
 .forest-intro,
-.math-intro {
+.math-intro,
+.beast-intro {
   font-size: 2rem;
   letter-spacing: 0.08em;
+}
+
+.beast-hunt {
+  height: 100%;
+}
+
+.beast-roster-line {
+  margin: 8px 0 14px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(3, 105, 161, 0.08);
+  color: #0f172a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.beast-hint {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + var(--safe-bottom));
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  font-weight: 700;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.beast-hud .star-hud__chip strong {
+  font-size: 0.95rem;
 }
 
 .math-top {
