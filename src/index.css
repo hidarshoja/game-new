@@ -1758,6 +1758,108 @@ a {
   background: linear-gradient(180deg, rgba(134, 239, 172, 0.35), rgba(52, 211, 153, 0.18));
 }
 
+.snake-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.snake-controls__row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.snake-controls__row button {
+  border: 0;
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.snake-controls__row button.on {
+  background: #fff;
+  color: #12203a;
+}
+
+.snake-controls--live {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: calc(10px + var(--safe-bottom));
+  z-index: 6;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(8, 21, 16, 0.55);
+  backdrop-filter: blur(12px);
+}
+
+.snake-arena:has(.snake-glass-pad) .snake-controls--live {
+  bottom: calc(136px + var(--safe-bottom));
+}
+
+.snake-arena:has(.snake-glass-pad) .snake-glass-pad {
+  bottom: calc(14px + var(--safe-bottom));
+}
+
+.snake-arena--touch {
+  touch-action: none;
+}
+
+.snake-touch-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(86px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 5;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  font-weight: 800;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.snake-touch-hint {
+  position: absolute;
+  z-index: 4;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 1.3rem;
+  background: rgba(74, 222, 128, 0.28);
+  border: 1px solid rgba(187, 247, 208, 0.45);
+  pointer-events: none;
+  animation: snake-hint 0.28s ease-out;
+}
+
+.snake-touch-hint--up { top: 26%; left: 50%; margin-left: -27px; }
+.snake-touch-hint--down { bottom: 34%; left: 50%; margin-left: -27px; }
+.snake-touch-hint--left { top: 46%; left: 14px; }
+.snake-touch-hint--right { top: 46%; right: 14px; }
+
+@keyframes snake-hint {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .snake-intro {
   display: flex;
   align-items: center;
