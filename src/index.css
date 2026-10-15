@@ -2638,6 +2638,17 @@ a {
   grid-template-columns: 64px 1fr 64px;
   gap: 10px;
   align-items: center;
+  padding: 8px;
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.rock-duel--live .beast-hud .star-hud__chip {
+  background: rgba(2, 6, 23, 0.72);
+  border-color: rgba(253, 224, 71, 0.28);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .duel-fire {
