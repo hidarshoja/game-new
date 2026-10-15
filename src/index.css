@@ -2628,6 +2628,21 @@ a {
   font-size: 0.95rem;
 }
 
+.duel-hint {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(86px + var(--safe-bottom));
+  margin: 0;
+  z-index: 5;
+  text-align: center;
+  color: rgba(254, 249, 195, 0.9);
+  font-size: 0.74rem;
+  font-weight: 700;
+  pointer-events: none;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
+}
+
 .duel-pad {
   position: absolute;
   left: 12px;

@@ -4,8 +4,10 @@ import {
   HITS_TO_WIN,
   STAGES,
   createDuel,
+  laneFromY,
   movePlayer,
   releaseShot,
+  setAimLane,
   shootPlayer,
   stageInfo,
   updateDuel,
@@ -64,6 +66,32 @@ export default function RockDuel() {
       })
     }
 
+    const fireAt = (lane) => {
+      const st = stateRef.current
+      const rect = wrap.getBoundingClientRect()
+      if (lane != null) setAimLane(st, lane)
+      if (shootPlayer(st, rect.width, rect.height, laneY)) playPop()
+    }
+
+    const onPointerDown = (event) => {
+      if (event.target?.closest?.('.duel-pad')) return
+      const st = stateRef.current
+      if (!st) return
+      const rect = wrap.getBoundingClientRect()
+      const x = (event.clientX ?? event.touches?.[0]?.clientX ?? 0) - rect.left
+      const y = (event.clientY ?? event.touches?.[0]?.clientY ?? 0) - rect.top
+      const lane = laneFromY(rect.height, y, laneY)
+      // سمت چپ: پرش به صخره · سمت راست یا وسط: نشانه + شلیک به همان صخره
+      if (x < rect.width * 0.34) {
+        const dir = lane - st.playerLane
+        if (dir !== 0 && movePlayer(st, Math.sign(dir))) playFlip()
+        return
+      }
+      setAimLane(st, lane)
+      fireAt(lane)
+    }
+    const onPointerUp = () => releaseShot(stateRef.current)
+
     const onKey = (event) => {
       const st = stateRef.current
       if (!st) return
@@ -77,12 +105,10 @@ export default function RockDuel() {
       }
       if (event.key === ' ' || event.key === 'Enter') {
         event.preventDefault()
-        const rect = wrap.getBoundingClientRect()
-        if (shootPlayer(st, rect.width)) playPop()
+        fireAt(st.aimLane)
       }
-      if (event.key === 'Escape') releaseShot(st)
     }
-    const onUp = (event) => {
+    const onKeyUp = (event) => {
       if (event.key === ' ' || event.key === 'Enter') releaseShot(stateRef.current)
     }
 
@@ -93,7 +119,7 @@ export default function RockDuel() {
       if (!booted) boot()
       const st = stateRef.current
       if (st && phaseRef.current === 'playing') {
-        const result = updateDuel(st, dt, rect.width)
+        const result = updateDuel(st, dt, rect.width, rect.height, laneY)
         if (result.event === 'hit-bot' || result.event === 'hit-you') playFlip()
         if (result.event === 'win') playCheer()
         if (result.event === 'lose') {
@@ -112,14 +138,20 @@ export default function RockDuel() {
       rafRef.current = requestAnimationFrame(paint)
     }
 
+    wrap.addEventListener('pointerdown', onPointerDown)
+    wrap.addEventListener('pointerup', onPointerUp)
+    wrap.addEventListener('pointercancel', onPointerUp)
     window.addEventListener('keydown', onKey)
-    window.addEventListener('keyup', onUp)
+    window.addEventListener('keyup', onKeyUp)
     window.addEventListener('resize', measure)
     rafRef.current = requestAnimationFrame(paint)
     return () => {
       cancelAnimationFrame(rafRef.current)
+      wrap.removeEventListener('pointerdown', onPointerDown)
+      wrap.removeEventListener('pointerup', onPointerUp)
+      wrap.removeEventListener('pointercancel', onPointerUp)
       window.removeEventListener('keydown', onKey)
-      window.removeEventListener('keyup', onUp)
+      window.removeEventListener('keyup', onKeyUp)
       window.removeEventListener('resize', measure)
     }
   }, [phase])
@@ -129,8 +161,12 @@ export default function RockDuel() {
   }
   const fire = () => {
     const wrap = wrapRef.current
-    if (!wrap) return
-    if (shootPlayer(stateRef.current, wrap.getBoundingClientRect().width)) playPop()
+    const st = stateRef.current
+    if (!wrap || !st) return
+    const rect = wrap.getBoundingClientRect()
+    // دکمه شلیک به آخرین نشانه / جای فعلی ربات می‌زند
+    setAimLane(st, st.aimLane ?? st.botLane)
+    if (shootPlayer(st, rect.width, rect.height, laneY)) playPop()
   }
 
   return (
@@ -140,9 +176,9 @@ export default function RockDuel() {
           <div className="level-panel">
             <p className="level-panel__kicker">بازی ۱۸</p>
             <div className="beast-intro" aria-hidden="true">🪨 ⚡ 🪨</div>
-            <h2 className="level-panel__title">روی صخره‌ها بپر و تیر بزن</h2>
+            <h2 className="level-panel__title">لمس صخره دشمن = شلیک به همان جا</h2>
             <p className="level-panel__meta">
-              هر طرف سه صخره دارد. جاخالی بده. هرکس ۱۰ تیر بخورد می‌بازد. بعد مرحله سخت‌تر می‌شود.
+              سمت چپ لمس کن تا بپری. سمت راست روی صخره دشمن بزن تا تیر برود. هرکس ۱۰ تیر بخورد می‌بازد.
             </p>
             <button type="button" className="primary-btn snake-start" onClick={() => setPhase('playing')}>
               شروع دوئل
@@ -162,6 +198,7 @@ export default function RockDuel() {
                 <strong>{hud.bot}/{HITS_TO_WIN}</strong>
               </div>
             </div>
+            <p className="duel-hint">لمس صخره دشمن برای شلیک · ▲▼ برای پرش</p>
             <div className="duel-pad" dir="ltr">
               <button type="button" className="glass-btn" onPointerDown={() => hop(-1)} aria-label="صخره بالا">▲</button>
               <button
@@ -260,7 +297,7 @@ function drawDuel(canvas, state, w, h) {
 
   for (let lane = 0; lane < 3; lane += 1) {
     const y = laneY(h, lane)
-    ctx.strokeStyle = 'rgba(125,211,252,0.12)'
+    ctx.strokeStyle = 'rgba(125,211,252,0.1)'
     ctx.lineWidth = 1
     ctx.setLineDash([4, 8])
     ctx.beginPath()
@@ -269,32 +306,63 @@ function drawDuel(canvas, state, w, h) {
     ctx.stroke()
     ctx.setLineDash([])
     drawRock(ctx, w * 0.16, y, lane === state.playerLane, '#38bdf8')
-    drawRock(ctx, w * 0.84, y, lane === state.botLane, '#fb7185')
+    drawRock(ctx, w * 0.84, y, lane === state.botLane || lane === state.aimLane, lane === state.aimLane ? '#fde047' : '#fb7185')
+  }
+
+  // خط نشانه به صخره هدف
+  {
+    const fromX = w * 0.22
+    const fromY = laneY(h, state.playerVis) - 34
+    const toX = w * 0.84
+    const toY = laneY(h, state.aimLane) - 10
+    ctx.strokeStyle = 'rgba(253,224,71,0.35)'
+    ctx.lineWidth = 2
+    ctx.setLineDash([6, 8])
+    ctx.beginPath()
+    ctx.moveTo(fromX, fromY)
+    ctx.lineTo(toX, toY)
+    ctx.stroke()
+    ctx.setLineDash([])
+    ctx.fillStyle = 'rgba(253,224,71,0.55)'
+    ctx.beginPath()
+    ctx.arc(toX, toY, 7, 0, Math.PI * 2)
+    ctx.fill()
   }
 
   drawFighter(ctx, w * 0.16, laneY(h, state.playerVis), 1, '#38bdf8', '#0ea5e9')
   drawFighter(ctx, w * 0.84, laneY(h, state.botVis), -1, '#fb7185', '#e11d48')
 
   for (const b of state.bullets) {
-    const y = laneY(h, b.lane) - 34
     const color = b.side === 'player' ? '#7dd3fc' : '#fda4af'
+    const ang = Math.atan2(b.vy, b.vx)
     ctx.save()
+    ctx.translate(b.x, b.y)
+    ctx.rotate(ang)
     ctx.shadowColor = color
     ctx.shadowBlur = 14
-    const g = ctx.createLinearGradient(b.x - 22, y, b.x + 10, y)
+    const g = ctx.createLinearGradient(-18, 0, 10, 0)
     g.addColorStop(0, 'rgba(255,255,255,0)')
     g.addColorStop(1, color)
     ctx.strokeStyle = g
-    ctx.lineWidth = 3
+    ctx.lineWidth = 3.5
     ctx.beginPath()
-    ctx.moveTo(b.x - 22, y)
-    ctx.lineTo(b.x + 8, y)
+    ctx.moveTo(-18, 0)
+    ctx.lineTo(10, 0)
     ctx.stroke()
     ctx.fillStyle = '#fff'
     ctx.beginPath()
-    ctx.arc(b.x + 8, y, 2.4, 0, Math.PI * 2)
+    ctx.arc(10, 0, 2.6, 0, Math.PI * 2)
     ctx.fill()
     ctx.restore()
+  }
+
+  for (const p of state.particles || []) {
+    ctx.globalAlpha = Math.max(0, p.life * 2)
+    ctx.fillStyle = p.color
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.globalAlpha = 1
   }
 
   for (const f of state.flashes) {
