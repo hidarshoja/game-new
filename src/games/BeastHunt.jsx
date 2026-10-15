@@ -190,7 +190,33 @@ export default function BeastHunt() {
                 </strong>
               </div>
             </div>
-            <p className="beast-hint">صفحه را لمس کن تا نشانه بگیری و تیر بزنی</p>
+            <button
+              type="button"
+              className="beast-fire"
+              aria-label="شلیک"
+              onPointerDown={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                pointerRef.current.down = true
+                const rect = wrapRef.current.getBoundingClientRect()
+                const hero = { x: Math.max(48, rect.width * 0.14), y: rect.height * 0.62 }
+                const st = stateRef.current
+                if (st?.beast) {
+                  const by = st.beast.drawY || rect.height * 0.58
+                  st.aim = Math.atan2(by - (hero.y - 22), Math.max(12, st.beast.x - 24 - hero.x))
+                }
+                if (shoot(st, hero.x, hero.y)) playPop()
+              }}
+              onPointerUp={() => {
+                pointerRef.current.down = false
+              }}
+              onPointerLeave={() => {
+                pointerRef.current.down = false
+              }}
+            >
+              🏹 شلیک
+            </button>
+            <p className="beast-hint">لمس صفحه یا دکمه شلیک</p>
           </div>
         )}
         {phase === 'over' && (

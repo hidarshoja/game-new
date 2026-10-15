@@ -2539,11 +2539,34 @@ a {
   text-align: center;
 }
 
+.beast-fire {
+  position: absolute;
+  left: 50%;
+  bottom: calc(42px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 6;
+  min-width: 140px;
+  padding: 14px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fbbf24, #ea580c);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  font-size: 1.05rem;
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.4);
+  touch-action: manipulation;
+}
+
+.beast-fire:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
 .beast-hint {
   position: absolute;
   left: 12px;
   right: 12px;
-  bottom: calc(12px + var(--safe-bottom));
+  bottom: calc(10px + var(--safe-bottom));
   margin: 0;
   text-align: center;
   color: rgba(255, 255, 255, 0.9);
