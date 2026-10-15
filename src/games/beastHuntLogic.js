@@ -1,26 +1,26 @@
 /** ۱۰ مرحله پایه */
 export const BEASTS = [
-  { id: 'snake', name: 'مار', hits: 3, speed: 20, accent: '#16a34a', dodge: 1.45 },
-  { id: 'fox', name: 'روباه', hits: 4, speed: 22, accent: '#ea580c', dodge: 1.65 },
-  { id: 'eagle', name: 'عقاب', hits: 5, speed: 25, accent: '#92400e', dodge: 1.85 },
-  { id: 'wolf', name: 'گرگ', hits: 6, speed: 23, accent: '#57534e', dodge: 1.4 },
-  { id: 'boar', name: 'گراز', hits: 7, speed: 19, accent: '#78716c', dodge: 1.05 },
-  { id: 'croc', name: 'تمساح', hits: 8, speed: 17, accent: '#166534', dodge: 0.95 },
-  { id: 'lion', name: 'شیر', hits: 9, speed: 21, accent: '#ca8a04', dodge: 1.35 },
-  { id: 'bear', name: 'خرس', hits: 10, speed: 16, accent: '#78350f', dodge: 0.9 },
-  { id: 'tiger', name: 'ببر', hits: 10, speed: 24, accent: '#f97316', dodge: 1.7 },
-  { id: 'dragon', name: 'اژدها', hits: 12, speed: 15, accent: '#7c3aed', dodge: 1.5 },
+  { id: 'snake', name: 'مار', hits: 2, speed: 15, accent: '#16a34a', dodge: 0.95 },
+  { id: 'fox', name: 'روباه', hits: 3, speed: 16, accent: '#ea580c', dodge: 1.1 },
+  { id: 'eagle', name: 'عقاب', hits: 4, speed: 18, accent: '#92400e', dodge: 1.25 },
+  { id: 'wolf', name: 'گرگ', hits: 5, speed: 16, accent: '#57534e', dodge: 1 },
+  { id: 'boar', name: 'گراز', hits: 6, speed: 14, accent: '#78716c', dodge: 0.75 },
+  { id: 'croc', name: 'تمساح', hits: 7, speed: 13, accent: '#166534', dodge: 0.7 },
+  { id: 'lion', name: 'شیر', hits: 8, speed: 15, accent: '#ca8a04', dodge: 0.95 },
+  { id: 'bear', name: 'خرس', hits: 9, speed: 12, accent: '#78350f', dodge: 0.65 },
+  { id: 'tiger', name: 'ببر', hits: 9, speed: 17, accent: '#f97316', dodge: 1.15 },
+  { id: 'dragon', name: 'اژدها', hits: 10, speed: 11, accent: '#7c3aed', dodge: 1 },
 ]
 
 export const STAGES_PER_LEVEL = BEASTS.length
-export const MAG_SIZE = 3
+export const MAG_SIZE = 4
 
 export function hitsFor(beast, level) {
-  return beast.hits + (level - 1) * 2
+  return beast.hits + (level - 1)
 }
 
 export function speedFor(beast, level) {
-  return beast.speed * (1 + (level - 1) * 0.28)
+  return beast.speed * (1 + (level - 1) * 0.16)
 }
 
 export function createHunt() {
@@ -54,7 +54,7 @@ export function spawnStage(state, width) {
     id: beast.id,
     name: beast.name,
     accent: beast.accent,
-    dodge: beast.dodge * (1 + (level - 1) * 0.12),
+    dodge: beast.dodge * (1 + (level - 1) * 0.06),
     maxHp: hitsFor(beast, level),
     hp: hitsFor(beast, level),
     speed: speedFor(beast, level),
@@ -101,7 +101,7 @@ export function shoot(state, heroX, heroY) {
   if (state.reload > 0) return false
   if (state.cooldown > 0) return false
   if (state.ammo <= 0) {
-    state.reload = 1.35
+    state.reload = 0.85
     state.ammo = 0
     return false
   }
@@ -117,11 +117,11 @@ export function shoot(state, heroX, heroY) {
     life: 1.25,
   })
   state.ammo -= 1
-  state.cooldown = 0.48
-  state.bloom = Math.min(1.35, state.bloom + 0.42)
+  state.cooldown = 0.32
+  state.bloom = Math.min(0.7, state.bloom + 0.18)
   state.mustRelease = true
-  state.shake = Math.min(8, state.shake + 3)
-  if (state.ammo <= 0) state.reload = 1.35
+  state.shake = Math.min(6, state.shake + 2)
+  if (state.ammo <= 0) state.reload = 0.85
   return true
 }
 
@@ -130,7 +130,7 @@ export function onPointerRelease(state) {
 }
 
 function pickDodge(beast, height) {
-  const amp = 58 * beast.dodge
+  const amp = 36 * beast.dodge
   const picks = [-amp, -amp * 0.65, -amp * 0.3, amp * 0.3, amp * 0.65, amp]
   let next = picks[Math.floor(Math.random() * picks.length)]
   if (Math.abs(next - beast.yOff) < 18) next = -Math.sign(beast.yOff || 1) * amp * 0.8
@@ -192,29 +192,29 @@ export function updateHunt(state, dt, width, height, heroX, heroY) {
 
   beast.x -= beast.speed * dt
   // حرکت موجی اضافه برای غیرقابل پیش‌بینی بودن
-  const weaveAmp = 10 * beast.dodge
+  const weaveAmp = 5 * beast.dodge
   beast.dodgeT -= dt
 
   for (const b of state.bullets) {
     if (b.life <= 0) continue
     const dx = beast.x - b.x
-    if (dx > 15 && dx < 200) {
+    if (dx > 30 && dx < 130) {
       const t = dx / Math.max(60, b.vx)
       const futureY = b.y + b.vy * t
       const byNow = height * 0.56 + beast.yOff + Math.sin(beast.weave) * weaveAmp
-      if (Math.abs(futureY - byNow) < 48) {
+      if (Math.abs(futureY - byNow) < 28 && Math.random() < 0.45) {
         beast.yTarget = futureY < byNow
-          ? beast.yOff + (55 + Math.random() * 25) * beast.dodge
-          : beast.yOff - (55 + Math.random() * 25) * beast.dodge
-        beast.yTarget = Math.max(-height * 0.2, Math.min(height * 0.16, beast.yTarget))
-        beast.dodgeT = 0.28 + Math.random() * 0.2
+          ? beast.yOff + 28 * beast.dodge
+          : beast.yOff - 28 * beast.dodge
+        beast.yTarget = Math.max(-height * 0.16, Math.min(height * 0.14, beast.yTarget))
+        beast.dodgeT = 0.45
         break
       }
     }
   }
 
   if (beast.dodgeT <= 0) pickDodge(beast, height)
-  const dodgeSpeed = 210 * beast.dodge
+  const dodgeSpeed = 120 * beast.dodge
   if (beast.yOff < beast.yTarget) beast.yOff = Math.min(beast.yTarget, beast.yOff + dodgeSpeed * dt)
   if (beast.yOff > beast.yTarget) beast.yOff = Math.max(beast.yTarget, beast.yOff - dodgeSpeed * dt)
 
@@ -227,17 +227,17 @@ export function updateHunt(state, dt, width, height, heroX, heroY) {
     if (beast.fireT <= 0 && beast.x < width * 0.9) {
       const mouthX = beast.x - 92
       const mouthY = by - 10
-      for (let i = 0; i < 3; i += 1) {
+      for (let i = 0; i < 2; i += 1) {
         state.flames.push({
           x: mouthX - i * 6,
-          y: mouthY + (i - 1) * 8,
-          vx: -190 - state.level * 22 - i * 12,
-          vy: (i - 1) * 35 + (Math.random() - 0.5) * 20,
-          life: 1.5 - i * 0.1,
-          r: 11 + i * 3,
+          y: mouthY + (i - 0.5) * 10,
+          vx: -150 - state.level * 12 - i * 8,
+          vy: (i - 0.5) * 24,
+          life: 1.35,
+          r: 10 + i * 2,
         })
       }
-      beast.fireT = Math.max(0.7, 1.35 - state.level * 0.1)
+      beast.fireT = Math.max(1.15, 1.9 - state.level * 0.06)
       beast.chomp = 1
     }
     if (beast.chomp > 0) beast.chomp -= dt * 2
@@ -270,10 +270,10 @@ export function updateHunt(state, dt, width, height, heroX, heroY) {
 
   let hit = false
   // جعبه کوچک‌تر = سخت‌تر
-  const hitLeft = beast.x - 58
-  const hitRight = beast.x + 28
-  const hitTop = by - 28
-  const hitBottom = by + 26
+  const hitLeft = beast.x - 78
+  const hitRight = beast.x + 40
+  const hitTop = by - 42
+  const hitBottom = by + 38
 
   for (const b of state.bullets) {
     if (b.life <= 0) continue
@@ -282,9 +282,9 @@ export function updateHunt(state, dt, width, height, heroX, heroY) {
       beast.hp -= 1
       beast.hurt = 0.2
       hit = true
-      beast.yTarget = beast.yOff + (Math.random() > 0.5 ? 1 : -1) * (48 + Math.random() * 30) * beast.dodge
-      beast.yTarget = Math.max(-height * 0.2, Math.min(height * 0.16, beast.yTarget))
-      beast.dodgeT = 0.22
+      beast.yTarget = beast.yOff + (Math.random() > 0.5 ? 1 : -1) * 24 * beast.dodge
+      beast.yTarget = Math.max(-height * 0.16, Math.min(height * 0.14, beast.yTarget))
+      beast.dodgeT = 0.4
       for (let i = 0; i < 10; i += 1) {
         state.particles.push({
           x: b.x,

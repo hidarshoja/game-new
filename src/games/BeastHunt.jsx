@@ -169,7 +169,7 @@ export default function BeastHunt() {
             <div className="beast-intro" aria-hidden="true">🏹 🐍 🦁 🐉</div>
             <h2 className="level-panel__title">نشانه بگیر، رها کن، دوباره بزن</h2>
             <p className="level-panel__meta">
-              نگه‌داشتن انگشت دیگر کار نمی‌کند. فقط ۳ تیر داری، بعد خشاب پر می‌شود. حیوان‌ها جاخالی می‌دهند.
+              هر بار لمس یک تیر است. ۴ تیر در خشاب داری. حیوان‌ها کمی جاخالی می‌دهند.
             </p>
             <p className="beast-roster-line">
               {BEASTS.map((b) => `${b.name} ${b.hits}`).join(' · ')}
@@ -235,7 +235,7 @@ export default function BeastHunt() {
             >
               🏹 شلیک
             </button>
-            <p className="beast-hint">لمس = نشانه · رها کن و دوباره بزن · ۳ تیر در خشاب</p>
+            <p className="beast-hint">لمس = نشانه · رها کن و دوباره بزن · ۴ تیر در خشاب</p>
           </div>
         )}
         {phase === 'over' && (
