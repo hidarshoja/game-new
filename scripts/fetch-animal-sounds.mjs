@@ -12,7 +12,7 @@ const SPEC = {
   cat: ['domestic cat meow', ['meow', 'cat']],
   dog: ['dog barking', ['dog', 'bark'], ['why', 'yourself', 'keep', 'human', 'licking']],
   rabbit: ['rabbit squeak', ['rabbit']],
-  bird: ['small bird chirping', ['bird'], ['pone', 'ganglia', 'nucleus']],
+  bird: ['bird song', ['bird', 'crossbill', 'finch', 'warbler', 'thrush', 'songbird']],
   fox: ['fox bark', ['fox'], ['sparrow', 'passerella', 'bird']],
   bear: ['bear growl', ['bear', 'growl']],
   lion: ['lion roar', ['lion', 'roar']],
@@ -29,7 +29,7 @@ const SPEC = {
   chicken: ['chicken cluck', ['chicken', 'hen', 'cluck']],
   rooster: ['rooster crowing', ['rooster', 'cock']],
   chick: ['chick peeping', ['chick', 'peep']],
-  duck: ['duck quack', ['duck', 'quack']],
+  duck: ['duck quack', ['duck', 'quack'], ['donald', 'cover', 'article']],
   goose: ['goose honk', ['goose']],
   frog: ['frog croak', ['frog', 'croak']],
   monkey: ['monkey call', ['monkey']],
@@ -39,7 +39,7 @@ const SPEC = {
   kangaroo: ['kangaroo', ['kangaroo']],
   bat: ['bat echolocation', ['bat']],
   owl: ['owl hoot', ['owl', 'hoot']],
-  eagle: ['eagle call', ['eagle']],
+  eagle: ['bald eagle call', ['eagle'], ['owl']],
   parrot: ['parrot talking', ['parrot']],
   penguin: ['penguin call', ['penguin']],
   swan: ['swan call', ['swan']],
@@ -137,7 +137,7 @@ const SPEC = {
   stork: ['stork clatter', ['stork']],
 }
 
-const BAN = ['music', 'piano', 'guitar', 'orchestra', 'speech', 'interview', 'homo', 'traffic', 'airplane', 'aircraft', 'motorcycle', 'news', 'podcast', 'ringtone', 'cartoon', 'synthes', 'wiktionary', 'pronunciation', 'spoken', 'yourself', 'why keep', 'pone.', 'ncomms', 'srep']
+const BAN = ['music', 'piano', 'guitar', 'orchestra', 'speech', 'interview', 'homo', 'traffic', 'airplane', 'aircraft', 'motorcycle', 'news', 'podcast', 'ringtone', 'cartoon', 'synthes', 'wiktionary', 'pronunciation', 'spoken', 'yourself', 'why keep', 'pone.', 'ncomms', 'srep', 'll-q', 'lingua', 'baby shark', '.mid', 'midi', 'debussy', 'donald', 'karaoke']
 
 function transcodeMp3(originalUrl) {
   const url = new URL(originalUrl.split('?')[0])
@@ -189,10 +189,11 @@ function score(item, must, forbid = []) {
   if (SPOKEN.test(title)) return -1
   if (BAN.some((word) => title.includes(word))) return -1
   if (forbid.some((word) => title.includes(word.toLowerCase()))) return -1
-  if (item.size < 4000 || item.size > 2200000) return -1
+  if (item.size < 4000 || item.size > 16000000) return -1
+  if (/\.mid$|\.midi$/.test(title) || item.mime.includes('midi')) return -1
   if (!/^audio\/|application\/ogg|application\/opus/.test(item.mime) && !/\.(ogg|oga|mp3|wav|opus|flac)$/i.test(item.title)) return -1
   const hits = must.filter((word) => title.includes(word.toLowerCase()))
-  if (hits.length !== must.length) return -1
+  if (!hits.length) return -1
   let value = 80 + hits.length * 10
   if (item.size < 280000) value += 25
   else if (item.size > 1200000) value -= 15
@@ -220,7 +221,11 @@ async function exists(file) {
 }
 
 const DIRECT = {
-  dog: 'Bark Huayra.ogg',
+  rabbit: 'Rabbit oinks and squeaks.wav',
+  dove: 'Dove cooing.ogg',
+  chicken: 'Chickens demanding food.ogg',
+  rooster: 'Rooster crowing.oga',
+  crow: 'Corvus corone - Carrion Crow XC533768.mp3',
   puppy: 'Perro ladrando.ogg',
   bear: 'Bear growl.ogg',
   elephant: 'Elephant voice - trumpeting.ogg',
@@ -276,7 +281,7 @@ async function downloadRetry(url, dest) {
 }
 
 await mkdir(OUT, { recursive: true })
-for (const id of ['dog', 'fox', 'giraffe', 'hedgehog']) {
+for (const id of ['eagle', 'goldfish', 'shark']) {
   await unlink(path.join(OUT, `${id}.mp3`)).catch(() => {})
 }
 const creditsPath = path.join(OUT, 'credits.json')
@@ -284,7 +289,7 @@ let credits = []
 if (await exists(creditsPath)) {
   credits = JSON.parse(await readFile(creditsPath, 'utf8'))
 }
-credits = credits.filter((item) => !['dog', 'fox', 'giraffe', 'hedgehog'].includes(item.id))
+credits = credits.filter((item) => !['dog', 'fox', 'giraffe', 'hedgehog', 'eagle', 'goldfish', 'shark'].includes(item.id))
 await writeFile(creditsPath, JSON.stringify(credits, null, 2))
 const used = new Set(credits.map((item) => item.source))
 

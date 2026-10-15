@@ -283,17 +283,25 @@ function drawRace(canvas, state, fx) {
     ctx.fill()
   }
 
-  ridge(ctx, ground - 8, '#9a3412', 0.08, state.dist, height * 0.16, width)
-  ridge(ctx, ground + 4, '#c2410c', 0.16, state.dist, height * 0.08, width)
+  ridge(ctx, ground - 18, '#7c2d12', 0.05, state.dist, height * 0.2, width)
+  ridge(ctx, ground - 2, '#c2410c', 0.12, state.dist, height * 0.1, width)
 
-  ctx.fillStyle = '#57534e'
+  for (let i = 0; i < 5; i += 1) {
+    const x = ((i * 180 - state.dist * 0.35) % (width + 100)) - 40
+    drawCactus(ctx, x, ground - 4, scale * (0.8 + (i % 3) * 0.15))
+  }
+
+  ctx.fillStyle = '#44403c'
   ctx.fillRect(0, ground, width, height - ground)
-  ctx.fillStyle = '#a8a29e'
-  ctx.fillRect(0, ground, width, 7 * scale)
+  const curb = ctx.createLinearGradient(0, ground, 0, ground + 14 * scale)
+  curb.addColorStop(0, '#a8a29e')
+  curb.addColorStop(1, '#78716c')
+  ctx.fillStyle = curb
+  ctx.fillRect(0, ground, width, 10 * scale)
   ctx.fillStyle = '#facc15'
   const dash = 54 * scale
   for (let x = -((state.dist * 0.9) % dash); x < width; x += dash) {
-    round(ctx, x, ground + 22 * scale, dash * 0.42, 6 * scale, 3)
+    round(ctx, x, ground + 24 * scale, dash * 0.42, 6 * scale, 3)
     ctx.fill()
   }
 
@@ -507,6 +515,19 @@ function drawCoin(ctx, x, y, r, time) {
   ctx.arc(0, 0, r, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
+}
+
+function drawCactus(ctx, x, ground, scale) {
+  ctx.fillStyle = '#166534'
+  round(ctx, x, ground - 48 * scale, 10 * scale, 48 * scale, 4 * scale)
+  ctx.fill()
+  round(ctx, x - 12 * scale, ground - 34 * scale, 14 * scale, 8 * scale, 4 * scale)
+  ctx.fill()
+  round(ctx, x + 8 * scale, ground - 42 * scale, 14 * scale, 8 * scale, 4 * scale)
+  ctx.fill()
+  ctx.fillStyle = '#22c55e'
+  round(ctx, x + 2 * scale, ground - 46 * scale, 4 * scale, 20 * scale, 2 * scale)
+  ctx.fill()
 }
 
 function ridge(ctx, base, color, speed, dist, amp, width) {

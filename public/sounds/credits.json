@@ -27,24 +27,6 @@
     "source": "https://upload.wikimedia.org/wikipedia/commons/3/36/Barking_deer.ogg"
   },
   {
-    "id": "dog",
-    "name": "سگ",
-    "file": "dog.mp3",
-    "title": "Bark Huayra.ogg",
-    "author": "redpanal.org",
-    "license": "CC BY-SA 3.0",
-    "source": "https://upload.wikimedia.org/wikipedia/commons/9/96/Bark_Huayra.ogg"
-  },
-  {
-    "id": "fox",
-    "name": "روباه",
-    "file": "fox.mp3",
-    "title": "Red Fox (Vulpes vulpes) (W1CDR0001529 BD12).ogg",
-    "author": "",
-    "license": "CC BY-SA 4.0",
-    "source": "https://upload.wikimedia.org/wikipedia/commons/7/79/Red_Fox_%28Vulpes_vulpes%29_%28W1CDR0001529_BD12%29.ogg"
-  },
-  {
     "id": "bear",
     "name": "خرس",
     "file": "bear.mp3",
@@ -70,15 +52,6 @@
     "author": "தகவலுழவன்",
     "license": "CC0",
     "source": "https://upload.wikimedia.org/wikipedia/commons/4/40/Elephant_voice_-_trumpeting.ogg"
-  },
-  {
-    "id": "giraffe",
-    "name": "زرافه",
-    "file": "giraffe.mp3",
-    "title": "Giraffehum4.oga",
-    "author": "Anton Baotic, Florian Sicks and Angela S. Stoeger",
-    "license": "CC BY-SA 4.0",
-    "source": "https://upload.wikimedia.org/wikipedia/commons/7/76/Giraffehum4.oga"
   },
   {
     "id": "horse",
@@ -133,5 +106,311 @@
     "author": "Rushenb",
     "license": "CC BY-SA 4.0",
     "source": "https://upload.wikimedia.org/wikipedia/commons/2/28/Sound-of-stump-tailed-macaque-%28macaca-arctoides%29.ogg"
+  },
+  {
+    "id": "bat",
+    "name": "خفاش",
+    "file": "bat.mp3",
+    "title": "Petit rhinolophe.ogg",
+    "author": "The original uploader was Blr at French Wikipedia .",
+    "license": "CC BY-SA 2.5",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Petit_rhinolophe.ogg"
+  },
+  {
+    "id": "owl",
+    "name": "جغد",
+    "file": "owl.mp3",
+    "title": "Maghreb owl hooting.wav",
+    "author": "عثمان",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/94/Maghreb_owl_hooting.wav"
+  },
+  {
+    "id": "parrot",
+    "name": "طوطی",
+    "file": "parrot.mp3",
+    "title": "Talking Parrot (Psittacula krameri).ogg",
+    "author": "Amada44",
+    "license": "CC BY 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Talking_Parrot_%28Psittacula_krameri%29.ogg"
+  },
+  {
+    "id": "penguin",
+    "name": "پنگوئن",
+    "file": "penguin.mp3",
+    "title": "20091121 Little Penguin calls at St Kilda Breakwater.ogg",
+    "author": "Mikeybear",
+    "license": "CC BY 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5a/20091121_Little_Penguin_calls_at_St_Kilda_Breakwater.ogg"
+  },
+  {
+    "id": "swan",
+    "name": "قو",
+    "file": "swan.mp3",
+    "title": "Cygnus buccinator - Trumpeter Swan XC96531.mp3",
+    "author": "Jonathon Jongsma",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Cygnus_buccinator_-_Trumpeter_Swan_XC96531.mp3"
+  },
+  {
+    "id": "peacock",
+    "name": "طاووس",
+    "file": "peacock.mp3",
+    "title": "Peacock1.ogg",
+    "author": "Secretlondon",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Peacock1.ogg"
+  },
+  {
+    "id": "flamingo",
+    "name": "فلامینگو",
+    "file": "flamingo.mp3",
+    "title": "Phoenicopterus roseus - Greater Flamingo XC432217.mp3",
+    "author": "Joost van Bruggen",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Phoenicopterus_roseus_-_Greater_Flamingo_XC432217.mp3"
+  },
+  {
+    "id": "sparrow",
+    "name": "گنجشک",
+    "file": "sparrow.mp3",
+    "title": "Melospiza melodia - Song Sparrow - XC80524.ogg",
+    "author": "Jonathon Jongsma",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Melospiza_melodia_-_Song_Sparrow_-_XC80524.ogg"
+  },
+  {
+    "id": "nightingale",
+    "name": "بلبل",
+    "file": "nightingale.mp3",
+    "title": "Japanese nightingale note04.ogg",
+    "author": "",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Japanese_nightingale_note04.ogg"
+  },
+  {
+    "id": "whale",
+    "name": "نهنگ",
+    "file": "whale.mp3",
+    "title": "Long finned Pilot Whales orig.ogg",
+    "author": "L. Ginzkey",
+    "license": "CC BY-SA 2.5",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/10/Long_finned_Pilot_Whales_orig.ogg"
+  },
+  {
+    "id": "dolphin",
+    "name": "دلفین",
+    "file": "dolphin.mp3",
+    "title": "161691 felixblume dolphin-screaming-underwater-in-caribbean-sea-mexico.wav",
+    "author": "The user Felix.Blume https://freesound.org/people/felix.blume/",
+    "license": "CC0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/5a/161691_felixblume_dolphin-screaming-underwater-in-caribbean-sea-mexico.wav"
+  },
+  {
+    "id": "octopus",
+    "name": "اختاپوس",
+    "file": "octopus.mp3",
+    "title": "O is for octopus.ogg",
+    "author": "Simon Kågedal Reimer",
+    "license": "CC0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/14/O_is_for_octopus.ogg"
+  },
+  {
+    "id": "crab",
+    "name": "خرچنگ",
+    "file": "crab.mp3",
+    "title": "Kcg-a̱gaga (crab).ogg",
+    "author": "Danjuma Anthony",
+    "license": "CC0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Kcg-a%CC%B1gaga_%28crab%29.ogg"
+  },
+  {
+    "id": "turtle",
+    "name": "لاک‌پشت",
+    "file": "turtle.mp3",
+    "title": "Turtle in Chak Language.mp3",
+    "author": "Wasiul Bahar",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Turtle_in_Chak_Language.mp3"
+  },
+  {
+    "id": "lizard",
+    "name": "مارمولک",
+    "file": "lizard.mp3",
+    "title": "Gekko gecko.wav",
+    "author": "Israel Benjumeda",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Gekko_gecko.wav"
+  },
+  {
+    "id": "snail",
+    "name": "حلزون",
+    "file": "snail.mp3",
+    "title": "Snail-eju.oga",
+    "author": "Suleiman6677",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Snail-eju.oga"
+  },
+  {
+    "id": "butterfly",
+    "name": "پروانه",
+    "file": "butterfly.mp3",
+    "title": "Frances Alda, Ancora un passo (Madama Butterfly) unrestored.ogg",
+    "author": "Giacomo Puccini (1858–1924) Frances Alda (1879–1952)",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Frances_Alda%2C_Ancora_un_passo_%28Madama_Butterfly%29_unrestored.ogg"
+  },
+  {
+    "id": "dog",
+    "name": "سگ",
+    "file": "dog.mp3",
+    "title": "Barking of a dog.ogg",
+    "author": "Amada44",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Barking_of_a_dog.ogg"
+  },
+  {
+    "id": "fox",
+    "name": "روباه",
+    "file": "fox.mp3",
+    "title": "Red Fox (Vulpes vulpes) (W1CDR0001529 BD12).ogg",
+    "author": "",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/79/Red_Fox_%28Vulpes_vulpes%29_%28W1CDR0001529_BD12%29.ogg"
+  },
+  {
+    "id": "giraffe",
+    "name": "زرافه",
+    "file": "giraffe.mp3",
+    "title": "Giraffehum4.oga",
+    "author": "Anton Baotic, Florian Sicks and Angela S. Stoeger",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/76/Giraffehum4.oga"
+  },
+  {
+    "id": "chicken",
+    "name": "مرغ",
+    "file": "chicken.mp3",
+    "title": "Chickens demanding food.ogg",
+    "author": "alys",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Chickens_demanding_food.ogg"
+  },
+  {
+    "id": "rooster",
+    "name": "خروس",
+    "file": "rooster.mp3",
+    "title": "Rooster crowing.oga",
+    "author": "Georgethewriter",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/17/Rooster_crowing.oga"
+  },
+  {
+    "id": "duck",
+    "name": "اردک",
+    "file": "duck.mp3",
+    "title": "Duck in Vezo.ogg",
+    "author": "Gasybeaugosse2020",
+    "license": "CC0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/07/Duck_in_Vezo.ogg"
+  },
+  {
+    "id": "kangaroo",
+    "name": "کانگورو",
+    "file": "kangaroo.mp3",
+    "title": "\"Kangaroo Hop\", by Melville Morris (1915).oga",
+    "author": "Melville Morris",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/a/a0/%22Kangaroo_Hop%22%2C_by_Melville_Morris_%281915%29.oga"
+  },
+  {
+    "id": "dove",
+    "name": "کبوتر",
+    "file": "dove.mp3",
+    "title": "Dove cooing.ogg",
+    "author": "mary905",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/05/Dove_cooing.ogg"
+  },
+  {
+    "id": "badger",
+    "name": "گورکن",
+    "file": "badger.mp3",
+    "title": "European Badger (Meles meles) (W1CDR0001490 BD4).ogg",
+    "author": "",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/93/European_Badger_%28Meles_meles%29_%28W1CDR0001490_BD4%29.ogg"
+  },
+  {
+    "id": "turkey",
+    "name": "بوقلمون",
+    "file": "turkey.mp3",
+    "title": "Meleagris gallopavo - Wild Turkey XC136045.ogg",
+    "author": "Jonathon Jongsma",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Meleagris_gallopavo_-_Wild_Turkey_XC136045.ogg"
+  },
+  {
+    "id": "orca",
+    "name": "نهنگ قاتل",
+    "file": "orca.mp3",
+    "title": "Killer whale simple.ogg",
+    "author": "",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/21/Killer_whale_simple.ogg"
+  },
+  {
+    "id": "calf",
+    "name": "گوساله",
+    "file": "calf.mp3",
+    "title": "Singing of Capuchinbird - Calfbird - Perissocephalus tricolor.flac",
+    "author": "Torben Friedrich",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/be/Singing_of_Capuchinbird_-_Calfbird_-_Perissocephalus_tricolor.flac"
+  },
+  {
+    "id": "lamb",
+    "name": "بره",
+    "file": "lamb.mp3",
+    "title": "Corner of a sheep field in summer.ogg",
+    "author": "earthcalling",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/51/Corner_of_a_sheep_field_in_summer.ogg"
+  },
+  {
+    "id": "lovebird",
+    "name": "مرغ عشق",
+    "file": "lovebird.mp3",
+    "title": "Masked lovebirds.ogg",
+    "author": "ZooFari",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/83/Masked_lovebirds.ogg"
+  },
+  {
+    "id": "hyena",
+    "name": "کفتار",
+    "file": "hyena.mp3",
+    "title": "Spotted Hyena Grunting (Crocuta crocuta).ogg",
+    "author": "Tom Snyder",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Spotted_Hyena_Grunting_%28Crocuta_crocuta%29.ogg"
+  },
+  {
+    "id": "donkey",
+    "name": "الاغ",
+    "file": "donkey.mp3",
+    "title": "157763 felix-blume a-donkey-is-braying-in-his-enclosure-in-south-of-france.wav",
+    "author": "felix-blume",
+    "license": "CC0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/25/157763_felix-blume_a-donkey-is-braying-in-his-enclosure-in-south-of-france.wav"
+  },
+  {
+    "id": "woodpecker",
+    "name": "دارکوب",
+    "file": "woodpecker.mp3",
+    "title": "Great Spotted Woodpecker drum.ogg",
+    "author": "T.Voekler",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/40/Great_Spotted_Woodpecker_drum.ogg"
   }
 ]
