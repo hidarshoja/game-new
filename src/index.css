@@ -63,11 +63,17 @@ a {
 .home {
   position: relative;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 28px 18px calc(28px + var(--safe-bottom));
   gap: 22px;
   z-index: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .home-bg {
