@@ -75,6 +75,7 @@ export default function ForestRun() {
       if (state?.alive && phaseRef.current === 'playing') {
         const result = updateForest(state, dt)
         if (result.picked) playPop()
+        if (result.eaten) playFlip()
         if (result.died) {
           playCheer()
           setHud({ score: state.score, fruits: state.fruitsGot })
@@ -215,16 +216,124 @@ function drawForest(canvas, state) {
 
   for (const item of items) {
     const p = project(w, h, item.lane, item.z)
-    const size = 28 * p.s
-    ctx.font = `${Math.max(16, size)}px sans-serif`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(item.emoji, p.x, p.y - (item.kind === 'animal' && item.type === 'high' ? 28 * p.s : 0))
+    if (item.kind === 'fruit') {
+      const size = 30 * p.s
+      ctx.font = `${Math.max(18, size)}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(item.emoji, p.x, p.y)
+    } else {
+      drawHungryAnimal(ctx, p, item, state)
+    }
   }
 
-  // بالاتر از دکمه‌ها تا اسکیت کامل دیده شود
-  const hero = project(w, h, state.visualLane, 0.42)
-  drawSkater(ctx, hero, state)
+  // بالاتر از دکمه‌ها؛ هنگام بلعیده شدن داخل دهان حیوان می‌رود
+  if (!state.eaten) {
+    const hero = project(w, h, state.visualLane, 0.42)
+    drawSkater(ctx, hero, state)
+  } else {
+    const eatP = project(w, h, state.eaten.lane, 0.32)
+    const progress = Math.min(1, state.eaten.t / 0.85)
+    drawSkaterBeingEaten(ctx, eatP, state, progress)
+  }
+}
+
+function drawHungryAnimal(ctx, p, animal, state) {
+  const s = Math.max(38, p.s * 78)
+  const lift = animal.type === 'high' ? s * 0.55 : 0
+  const x = p.x
+  const y = p.y - lift
+  const eating = state.eaten && state.eaten.ob === animal
+  const jaw = eating
+    ? 0.15 + Math.min(1, state.eaten.t / 0.4) * 0.85
+    : Math.max(0.45, animal.chomp ?? 0.5)
+  const body = animal.color || '#5c3d1e'
+  const mouth = animal.mouth || '#7f1d1d'
+
+  ctx.save()
+  ctx.translate(x, y)
+
+  // بدن بزرگ‌تر
+  ctx.fillStyle = body
+  ctx.beginPath()
+  ctx.ellipse(0, s * 0.08, s * 0.72, s * 0.58, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // گوش‌ها
+  ctx.beginPath()
+  ctx.ellipse(-s * 0.48, -s * 0.42, s * 0.18, s * 0.22, -0.4, 0, Math.PI * 2)
+  ctx.ellipse(s * 0.48, -s * 0.42, s * 0.18, s * 0.22, 0.4, 0, Math.PI * 2)
+  ctx.fill()
+
+  // چشم‌ها
+  ctx.fillStyle = '#fff'
+  ctx.beginPath()
+  ctx.arc(-s * 0.28, -s * 0.18, s * 0.16, 0, Math.PI * 2)
+  ctx.arc(s * 0.28, -s * 0.18, s * 0.16, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#111827'
+  ctx.beginPath()
+  ctx.arc(-s * 0.24, -s * 0.16, s * 0.08, 0, Math.PI * 2)
+  ctx.arc(s * 0.32, -s * 0.16, s * 0.08, 0, Math.PI * 2)
+  ctx.fill()
+
+  // دهان باز بزرگ
+  const open = s * (0.22 + jaw * 0.38)
+  ctx.fillStyle = mouth
+  ctx.beginPath()
+  ctx.ellipse(0, s * 0.22, s * 0.42, open, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // دندان‌ها
+  ctx.fillStyle = '#fef3c7'
+  const teeth = 5
+  for (let i = 0; i < teeth; i += 1) {
+    const tx = -s * 0.28 + (i / (teeth - 1)) * s * 0.56
+    ctx.beginPath()
+    ctx.moveTo(tx - s * 0.05, s * 0.22 - open * 0.85)
+    ctx.lineTo(tx, s * 0.22 - open * 0.35)
+    ctx.lineTo(tx + s * 0.05, s * 0.22 - open * 0.85)
+    ctx.closePath()
+    ctx.fill()
+  }
+
+  // زبان
+  ctx.fillStyle = '#fb7185'
+  ctx.beginPath()
+  ctx.ellipse(0, s * 0.22 + open * 0.25, s * 0.16, open * 0.35, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // شکلک کوچک بالای سر برای تشخیص نوع
+  ctx.font = `${Math.max(14, s * 0.38)}px sans-serif`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(animal.emoji, 0, -s * 0.72)
+
+  ctx.restore()
+}
+
+function drawSkaterBeingEaten(ctx, p, state, progress) {
+  const s = Math.max(40, p.s * 88) * (1 - progress * 0.72)
+  const x = p.x
+  const y = p.y - s * 0.05 + progress * s * 0.55
+  ctx.save()
+  ctx.globalAlpha = Math.max(0.15, 1 - progress * 0.85)
+  ctx.translate(x, y)
+  ctx.scale(1 - progress * 0.35, 1 - progress * 0.55)
+  // آدمک کوچک که به سمت دهان می‌رود
+  ctx.fillStyle = '#fb923c'
+  roundRect(ctx, -s * 0.16, -s * 0.28, s * 0.32, s * 0.3, 8)
+  ctx.fill()
+  ctx.fillStyle = '#fcd34d'
+  ctx.beginPath()
+  ctx.arc(0, -s * 0.42, s * 0.14, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#1f2937'
+  ctx.beginPath()
+  ctx.arc(-s * 0.05, -s * 0.44, s * 0.02, 0, Math.PI * 2)
+  ctx.arc(s * 0.05, -s * 0.44, s * 0.02, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
 }
 
 function roundRect(ctx, x, y, w, h, r) {

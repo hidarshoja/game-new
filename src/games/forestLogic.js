@@ -14,11 +14,13 @@ export function createForest() {
     fruitsGot: 0,
     alive: true,
     time: 0,
+    // وقتی حیوان می‌گیرد: { lane, type, emoji, color, t }
+    eaten: null,
   }
 }
 
 export function steerForest(state, action) {
-  if (!state.alive) return false
+  if (!state.alive || state.eaten) return false
   if (action === 'left' && state.lane > 0) {
     state.lane -= 1
     return true
@@ -41,10 +43,13 @@ export function steerForest(state, action) {
 }
 
 const FRUITS = ['🍎', '🍌', '🍇', '🍓', '🍊', '🍉']
-const ANIMALS = [
-  { type: 'low', emoji: '🦔', label: 'خارپشت' },
-  { type: 'high', emoji: '🦅', label: 'عقاب' },
-  { type: 'block', emoji: '🐻', label: 'خرس' },
+
+export const ANIMALS = [
+  { type: 'low', emoji: '🦔', label: 'خارپشت', color: '#92400e', mouth: '#7f1d1d' },
+  { type: 'high', emoji: '🦅', label: 'عقاب', color: '#78350f', mouth: '#450a0a' },
+  { type: 'block', emoji: '🐻', label: 'خرس', color: '#5c3d1e', mouth: '#7f1d1d' },
+  { type: 'block', emoji: '🐺', label: 'گرگ', color: '#57534e', mouth: '#450a0a' },
+  { type: 'low', emoji: '🐊', label: 'تمساح', color: '#166534', mouth: '#14532d' },
 ]
 
 function spawn(state) {
@@ -70,13 +75,34 @@ function spawn(state) {
       z: 18,
       type: animal.type,
       emoji: animal.emoji,
+      color: animal.color,
+      mouth: animal.mouth,
       hit: false,
+      chomp: 0,
     })
   }
 }
 
 export function updateForest(state, dt) {
   if (!state.alive) return { died: false, picked: 0 }
+
+  // صحنه بلعیده شدن
+  if (state.eaten) {
+    state.eaten.t += dt
+    state.time += dt
+    for (const ob of state.obstacles) {
+      if (ob === state.eaten.ob || (ob.lane === state.eaten.lane && Math.abs(ob.z - 0.35) < 0.8)) {
+        ob.chomp = Math.min(1, state.eaten.t / 0.35)
+        ob.z = Math.max(0.28, ob.z - dt * 0.4)
+      }
+    }
+    if (state.eaten.t >= 1.15) {
+      state.alive = false
+      return { died: true, picked: 0 }
+    }
+    return { died: false, picked: 0 }
+  }
+
   state.time += dt
   state.speed = Math.min(11.8, 7.6 + state.zRun * 0.012)
   state.zRun += state.speed * dt
@@ -93,7 +119,11 @@ export function updateForest(state, dt) {
     spawn(state)
     state.nextSpawn = Math.max(0.72, 1.2 - state.zRun * 0.003)
   }
-  for (const ob of state.obstacles) ob.z -= state.speed * dt
+  for (const ob of state.obstacles) {
+    ob.z -= state.speed * dt
+    // دهان کمی باز و بسته می‌شود
+    ob.chomp = 0.35 + Math.sin(state.time * 6 + ob.lane) * 0.2
+  }
   let picked = 0
   for (const fruit of state.fruits) {
     fruit.z -= state.speed * dt
@@ -109,14 +139,21 @@ export function updateForest(state, dt) {
     if (ob.z > 0.55 || ob.z < -0.12) continue
     if (ob.type === 'low' && state.jump > 0.42) continue
     if (ob.type === 'high' && state.slide > 0.05) continue
-    if (ob.type === 'block') {
-      ob.hit = true
-      state.alive = false
-      return { died: true, picked }
-    }
     ob.hit = true
-    state.alive = false
-    return { died: true, picked }
+    ob.chomp = 0
+    state.eaten = {
+      lane: ob.lane,
+      type: ob.type,
+      emoji: ob.emoji,
+      color: ob.color,
+      mouth: ob.mouth,
+      ob,
+      t: 0,
+    }
+    state.jump = 0
+    state.jumpV = 0
+    state.slide = 0
+    return { died: false, picked, eaten: true }
   }
   state.obstacles = state.obstacles.filter((ob) => ob.z > -2)
   state.fruits = state.fruits.filter((fruit) => fruit.z > -2 && !fruit.got)

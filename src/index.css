@@ -2429,7 +2429,7 @@ a {
 }
 
 .game-shell:has(.star-pad--live) {
-  background: #1e1b4b;
+  background: #0c4a6e;
 }
 
 .game-shell:has(.forest--live) {
