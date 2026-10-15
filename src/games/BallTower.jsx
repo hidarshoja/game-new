@@ -12,9 +12,13 @@ export default function BallTower() {
   const dragRef = useRef(null)
   const [phase, setPhase] = useState('intro')
   const [run, setRun] = useState(0)
-  const [hud, setHud] = useState({ score: 0 })
+  const [hud, setHud] = useState({ score: 0, combo: 0 })
 
-  const sync = () => setHud({ score: stateRef.current?.score || 0 })
+  const sync = () => {
+    const state = stateRef.current
+    if (!state) return
+    setHud({ score: state.score, combo: state.combo })
+  }
 
   const draw = () => {
     const canvas = canvasRef.current
@@ -23,39 +27,78 @@ export default function BallTower() {
     const ctx = canvas.getContext('2d')
     const width = canvas.width
     const height = canvas.height
-    const cx = width / 2
-    const anchor = height * 0.34
-    const rx = Math.min(width * 0.34, 150)
-    const ry = rx * 0.34
+    const shakeX = state.shake ? Math.sin(state.time * 55) * 6 * state.shake : 0
+    const cx = width / 2 + shakeX
+    const anchor = height * 0.36
+    const rx = Math.min(width * 0.36, 168)
+    const ry = rx * 0.32
+    const pillar = Math.max(10, rx * 0.09)
 
     const sky = ctx.createLinearGradient(0, 0, 0, height)
-    sky.addColorStop(0, '#1e1b4b')
-    sky.addColorStop(0.45, '#312e81')
-    sky.addColorStop(1, '#0f172a')
+    sky.addColorStop(0, '#0b1024')
+    sky.addColorStop(0.4, '#1e1b4b')
+    sky.addColorStop(1, '#020617')
     ctx.fillStyle = sky
     ctx.fillRect(0, 0, width, height)
 
-    const glow = ctx.createRadialGradient(cx, anchor, 10, cx, height * 0.55, rx * 2.2)
-    glow.addColorStop(0, 'rgba(250, 204, 21, 0.16)')
+    const glow = ctx.createRadialGradient(cx, anchor, 8, cx, height * 0.5, rx * 2.4)
+    glow.addColorStop(0, 'rgba(251, 113, 133, 0.18)')
+    glow.addColorStop(0.45, 'rgba(99, 102, 241, 0.1)')
     glow.addColorStop(1, 'rgba(0,0,0,0)')
     ctx.fillStyle = glow
     ctx.fillRect(0, 0, width, height)
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.16)'
-    ctx.lineWidth = Math.max(8, rx * 0.08)
-    ctx.beginPath()
-    ctx.moveTo(cx, 0)
-    ctx.lineTo(cx, height)
-    ctx.stroke()
+    for (let i = 0; i < 18; i += 1) {
+      const twinkle = 0.15 + ((Math.sin(state.time * 2 + i) + 1) / 2) * 0.35
+      ctx.fillStyle = `rgba(255,255,255,${twinkle})`
+      ctx.beginPath()
+      ctx.arc((i * 97) % width, (i * 61 + state.time * 8) % (height * 0.55), 1.4, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    const pole = ctx.createLinearGradient(cx - pillar, 0, cx + pillar, 0)
+    pole.addColorStop(0, '#64748b')
+    pole.addColorStop(0.35, '#f8fafc')
+    pole.addColorStop(0.7, '#cbd5e1')
+    pole.addColorStop(1, '#475569')
+    ctx.fillStyle = pole
+    ctx.fillRect(cx - pillar / 2, 0, pillar, height)
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'
+    ctx.fillRect(cx - pillar * 0.18, 0, pillar * 0.18, height)
 
     const visible = state.rings
-      .map((ring) => ({ ring, sy: anchor + (ring.y - state.ballY) * 0.85 }))
-      .filter((item) => item.sy > -40 && item.sy < height + 40)
+      .map((ring) => ({ ring, sy: anchor + (ring.y - state.ballY) * 0.82 }))
+      .filter((item) => item.sy > -80 && item.sy < height + 80)
       .sort((a, b) => a.sy - b.sy)
 
-    visible.forEach(({ ring, sy }) => drawRing(ctx, cx, sy, rx, ry, ring.gapCenter + state.rot, ring.gap, ring.color))
+    visible.forEach(({ ring, sy }) => {
+      drawRing(ctx, cx, sy, rx, ry, ring.gapCenter + state.rot, ring.gap, ring.color, ring.deep, 'back')
+    })
 
-    drawBall(ctx, cx + Math.cos(BALL_ANGLE) * rx * 0.72, anchor + Math.sin(BALL_ANGLE) * ry * 0.72, rx * 0.16)
+    for (const p of state.particles) {
+      const px = cx + p.x * rx
+      const py = anchor + (p.y - state.ballY) * 0.82
+      ctx.globalAlpha = Math.max(0, p.life * 2)
+      ctx.fillStyle = p.color
+      ctx.beginPath()
+      ctx.arc(px, py, p.size, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.globalAlpha = 1
+    }
+
+    const bounceLift = (state.hop || 0) + state.bounce * 14
+    const ballX = cx + Math.cos(BALL_ANGLE) * rx * 0.78
+    const ballY = anchor + Math.sin(BALL_ANGLE) * ry * 0.55 - bounceLift
+    drawBall(ctx, ballX, ballY, rx * 0.145, state)
+
+    visible.forEach(({ ring, sy }) => {
+      drawRing(ctx, cx, sy, rx, ry, ring.gapCenter + state.rot, ring.gap, ring.color, ring.deep, 'front')
+    })
+
+    if (state.flash > 0) {
+      ctx.fillStyle = `rgba(253, 224, 71, ${state.flash * 0.2})`
+      ctx.fillRect(0, 0, width, height)
+    }
   }
 
   const measure = () => {
@@ -144,10 +187,15 @@ export default function BallTower() {
     if (dragRef.current == null || !stateRef.current?.alive) return
     const dx = event.clientX - dragRef.current
     dragRef.current = event.clientX
-    nudgeTower(stateRef.current, -dx * 0.012)
+    nudgeTower(stateRef.current, -dx * 0.014)
   }
   const onPointerUp = () => {
     dragRef.current = null
+  }
+
+  const begin = () => {
+    setRun((value) => value + 1)
+    setPhase('playing')
   }
 
   return (
@@ -163,12 +211,36 @@ export default function BallTower() {
             onPointerCancel={onPointerUp}
           >
             <canvas ref={canvasRef} className="snake-canvas" />
+            <div className="snake-glass-hud">
+              <div className="glass-chip">
+                <span>کمبو</span>
+                <strong>{hud.combo}</strong>
+              </div>
+              <div className="glass-chip glass-chip--score">
+                <span>امتیاز</span>
+                <strong>{hud.score}</strong>
+              </div>
+            </div>
             <div className="snake-glass-pad" dir="ltr">
-              <button type="button" className="glass-btn glass-btn--side" aria-label="چپ" onPointerDown={hold(-1)} onPointerUp={release} onPointerCancel={release}>
+              <button
+                type="button"
+                className="glass-btn glass-btn--side"
+                aria-label="چپ"
+                onPointerDown={hold(-1)}
+                onPointerUp={release}
+                onPointerCancel={release}
+              >
                 ◀
               </button>
               <div className="snake-glass-pad__col" />
-              <button type="button" className="glass-btn glass-btn--side" aria-label="راست" onPointerDown={hold(1)} onPointerUp={release} onPointerCancel={release}>
+              <button
+                type="button"
+                className="glass-btn glass-btn--side"
+                aria-label="راست"
+                onPointerDown={hold(1)}
+                onPointerUp={release}
+                onPointerCancel={release}
+              >
                 ▶
               </button>
             </div>
@@ -184,8 +256,8 @@ export default function BallTower() {
               <b />
             </div>
             <h2 className="level-panel__title">توپ را از شکاف رد کن</h2>
-            <p className="level-panel__meta">برج را بچرخان تا توپ به پایین برسد</p>
-            <button type="button" className="primary-btn snake-start" onClick={() => { setRun((v) => v + 1); setPhase('playing') }}>
+            <p className="level-panel__meta">برج را بچرخان و به پایین برس</p>
+            <button type="button" className="primary-btn snake-start" onClick={begin}>
               شروع بازی
             </button>
           </div>
@@ -197,8 +269,8 @@ export default function BallTower() {
             <h2>تبریک می‌گم</h2>
             <p>جمع امتیاز شما</p>
             <div className="tetris-final-score">{hud.score}</div>
-            <p className="level-panel__meta">توپ به حلقه خورد</p>
-            <button type="button" className="primary-btn snake-start" onClick={() => { setRun((v) => v + 1); setPhase('playing') }}>
+            <p className="level-panel__meta">بهترین کمبو: {stateRef.current?.bestCombo || 0}</p>
+            <button type="button" className="primary-btn snake-start" onClick={begin}>
               بازی دوباره
             </button>
           </div>
@@ -208,38 +280,77 @@ export default function BallTower() {
   )
 }
 
-function drawRing(ctx, cx, cy, rx, ry, gapCenter, gap, color) {
+function drawRing(ctx, cx, cy, rx, ry, gapCenter, gap, color, deep, half) {
   const start = gapCenter + gap / 2
   const end = gapCenter - gap / 2 + Math.PI * 2
+  const mid = (start + end) / 2
+  const thickness = Math.max(10, ry * 0.95)
+
   ctx.save()
-  ctx.strokeStyle = 'rgba(0,0,0,0.28)'
-  ctx.lineWidth = ry * 0.85
-  ctx.beginPath()
-  ctx.ellipse(cx, cy + ry * 0.45, rx, ry, 0, start, end)
-  ctx.stroke()
-  ctx.strokeStyle = color
-  ctx.shadowColor = color
-  ctx.shadowBlur = 12
-  ctx.lineWidth = ry * 0.7
-  ctx.beginPath()
-  ctx.ellipse(cx, cy, rx, ry, 0, start, end)
-  ctx.stroke()
+  ctx.lineCap = 'butt'
+  ctx.lineWidth = thickness
+
+  if (half === 'back') {
+    ctx.strokeStyle = 'rgba(0,0,0,0.28)'
+    ctx.beginPath()
+    ctx.ellipse(cx, cy + ry * 0.55, rx * 0.98, ry * 0.98, 0, start, end)
+    ctx.stroke()
+    ctx.strokeStyle = deep
+    ctx.beginPath()
+    ctx.ellipse(cx, cy + ry * 0.22, rx, ry, 0, start, Math.min(end, mid))
+    ctx.stroke()
+  } else {
+    ctx.shadowColor = color
+    ctx.shadowBlur = 16
+    const paint = ctx.createLinearGradient(cx - rx, cy, cx + rx, cy)
+    paint.addColorStop(0, deep)
+    paint.addColorStop(0.5, color)
+    paint.addColorStop(1, deep)
+    ctx.strokeStyle = paint
+    ctx.beginPath()
+    ctx.ellipse(cx, cy, rx, ry, 0, Math.max(start, mid), end)
+    ctx.stroke()
+    ctx.shadowBlur = 0
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'
+    ctx.lineWidth = Math.max(2, thickness * 0.18)
+    ctx.beginPath()
+    ctx.ellipse(cx, cy - ry * 0.18, rx * 0.92, ry * 0.7, 0, Math.max(start, mid), end)
+    ctx.stroke()
+  }
   ctx.restore()
 }
 
-function drawBall(ctx, x, y, r) {
+function drawBall(ctx, x, y, r, state) {
   ctx.save()
-  ctx.fillStyle = 'rgba(0,0,0,0.28)'
+  ctx.fillStyle = 'rgba(0,0,0,0.3)'
   ctx.beginPath()
-  ctx.ellipse(x, y + r * 1.3, r * 0.8, r * 0.28, 0, 0, Math.PI * 2)
+  ctx.ellipse(x, y + r * 1.45, r * 0.85, r * 0.28, 0, 0, Math.PI * 2)
   ctx.fill()
-  const fill = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.1, x, y, r)
-  fill.addColorStop(0, '#fff')
-  fill.addColorStop(0.45, '#fb7185')
+
+  if (state.ballV < -40) {
+    ctx.strokeStyle = 'rgba(253, 164, 175, 0.45)'
+    ctx.lineWidth = r * 0.45
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    ctx.lineTo(x, y + Math.min(42, Math.abs(state.ballV) * 0.08))
+    ctx.stroke()
+  }
+
+  const fill = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.08, x, y, r)
+  fill.addColorStop(0, '#ffffff')
+  fill.addColorStop(0.35, '#fb7185')
   fill.addColorStop(1, '#9f1239')
   ctx.fillStyle = fill
+  ctx.shadowColor = '#fb7185'
+  ctx.shadowBlur = 18
   ctx.beginPath()
   ctx.arc(x, y, r, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.shadowBlur = 0
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.beginPath()
+  ctx.ellipse(x - r * 0.25, y - r * 0.28, r * 0.22, r * 0.14, -0.5, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
 }
