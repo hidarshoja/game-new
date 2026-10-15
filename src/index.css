@@ -1673,21 +1673,19 @@ a {
 
 .snake-glass-pad {
   position: absolute;
-  left: 50%;
-  bottom: calc(18px + var(--safe-bottom));
-  transform: translateX(-50%);
+  left: 10px;
+  right: 10px;
+  bottom: calc(14px + var(--safe-bottom));
   z-index: 5;
-  width: min(220px, calc(100% - 28px));
   display: grid;
-  gap: 8px;
-  justify-items: center;
+  grid-template-columns: 78px minmax(0, 1fr) 78px;
+  gap: 10px;
+  align-items: stretch;
 }
 
-.snake-glass-pad__row {
+.snake-glass-pad__col {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  width: 100%;
 }
 
 .glass-btn {
@@ -1706,6 +1704,12 @@ a {
   cursor: pointer;
   touch-action: manipulation;
   user-select: none;
+}
+
+.glass-btn--side {
+  min-height: 112px;
+  font-size: 1.45rem;
+  border-radius: 24px;
 }
 
 .glass-btn:active {

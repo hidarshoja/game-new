@@ -60,7 +60,7 @@ export default function SnakeGame() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
     const topSafe = 52
-    const bottomSafe = 108
+    const bottomSafe = 132
     const sidePad = 6
     const usableW = width - sidePad * 2
     const usableH = Math.max(180, height - topSafe - bottomSafe)
@@ -142,45 +142,80 @@ export default function SnakeGame() {
       ctx.restore()
     }
 
-    state.snake.forEach((part, index) => {
-      const x = ox + part.x * cell
-      const y = oy + part.y * cell
+    const centerOf = (part) => ({
+      x: ox + part.x * cell + cell / 2,
+      y: oy + part.y * cell + cell / 2,
+    })
+
+    if (state.snake.length > 1) {
+      ctx.save()
+      ctx.beginPath()
+      state.snake.forEach((part, index) => {
+        const point = centerOf(part)
+        if (index === 0) ctx.moveTo(point.x, point.y)
+        else ctx.lineTo(point.x, point.y)
+      })
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.lineWidth = cell * 0.62
+      ctx.strokeStyle = '#14532d'
+      ctx.shadowColor = 'rgba(74, 222, 128, 0.35)'
+      ctx.shadowBlur = 16
+      ctx.stroke()
+      ctx.restore()
+    }
+
+    for (let index = state.snake.length - 1; index >= 0; index -= 1) {
+      const part = state.snake[index]
+      const point = centerOf(part)
       const isHead = index === 0
       const t = index / Math.max(1, state.snake.length - 1)
+      const radius = isHead ? cell * 0.4 : cell * 0.3
       ctx.save()
-      ctx.shadowColor = isHead ? '#86efac' : 'rgba(52, 211, 153, 0.28)'
-      ctx.shadowBlur = isHead ? 18 : 8
-      roundRect(
-        ctx,
-        x + cell * 0.1,
-        y + cell * 0.1,
-        cell * 0.8,
-        cell * 0.8,
-        isHead ? cell * 0.34 : cell * 0.28,
+      ctx.shadowColor = isHead ? '#bbf7d0' : 'rgba(34, 197, 94, 0.25)'
+      ctx.shadowBlur = isHead ? 18 : 6
+      const fill = ctx.createRadialGradient(
+        point.x - radius * 0.35,
+        point.y - radius * 0.4,
+        radius * 0.15,
+        point.x,
+        point.y,
+        radius,
       )
-      const fill = ctx.createLinearGradient(x, y, x + cell, y + cell)
-      fill.addColorStop(0, isHead ? '#dcfce7' : `rgba(134, 239, 172, ${0.95 - t * 0.4})`)
-      fill.addColorStop(1, isHead ? '#16a34a' : `rgba(21, 128, 61, ${0.95 - t * 0.2})`)
+      fill.addColorStop(0, isHead ? '#ecfdf5' : `rgba(187, 247, 208, ${0.9 - t * 0.35})`)
+      fill.addColorStop(0.55, isHead ? '#4ade80' : `rgba(34, 197, 94, ${0.95 - t * 0.2})`)
+      fill.addColorStop(1, isHead ? '#15803d' : `rgba(20, 83, 45, ${0.95 - t * 0.15})`)
+      ctx.beginPath()
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2)
       ctx.fillStyle = fill
       ctx.fill()
+      ctx.restore()
 
-      if (isHead) {
+      if (!isHead) continue
+
+      const look = {
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 },
+      }[state.dir]
+      const side = { x: -look.y, y: look.x }
+      const eye = Math.max(2.2, cell * 0.09)
+      const drawEye = (sign) => {
+        const ex = point.x + look.x * cell * 0.12 + side.x * cell * 0.13 * sign
+        const ey = point.y + look.y * cell * 0.12 + side.y * cell * 0.13 * sign
         ctx.fillStyle = '#052e16'
-        const eye = Math.max(2, cell * 0.09)
-        const oxEye = state.dir === 'left' ? -cell * 0.12 : state.dir === 'right' ? cell * 0.12 : 0
-        const oyEye = state.dir === 'up' ? -cell * 0.12 : state.dir === 'down' ? cell * 0.12 : 0
         ctx.beginPath()
-        ctx.arc(x + cell * 0.35 + oxEye, y + cell * 0.38 + oyEye, eye, 0, Math.PI * 2)
-        ctx.arc(x + cell * 0.65 + oxEye, y + cell * 0.38 + oyEye, eye, 0, Math.PI * 2)
+        ctx.arc(ex, ey, eye, 0, Math.PI * 2)
         ctx.fill()
-        ctx.fillStyle = 'rgba(255,255,255,0.85)'
+        ctx.fillStyle = '#fff'
         ctx.beginPath()
-        ctx.arc(x + cell * 0.33 + oxEye, y + cell * 0.35 + oyEye, eye * 0.35, 0, Math.PI * 2)
-        ctx.arc(x + cell * 0.63 + oxEye, y + cell * 0.35 + oyEye, eye * 0.35, 0, Math.PI * 2)
+        ctx.arc(ex - eye * 0.3, ey - eye * 0.3, eye * 0.35, 0, Math.PI * 2)
         ctx.fill()
       }
-      ctx.restore()
-    })
+      drawEye(1)
+      drawEye(-1)
+    }
   }
 
   const schedule = () => {
@@ -293,19 +328,29 @@ export default function SnakeGame() {
             </div>
 
             <div className="snake-glass-pad" dir="ltr">
-              <button type="button" className="glass-btn" aria-label="بالا" onPointerDown={steer('up')}>
-                ▲
+              <button
+                type="button"
+                className="glass-btn glass-btn--side"
+                aria-label="چپ"
+                onPointerDown={steer('left')}
+              >
+                ◀
               </button>
-              <div className="snake-glass-pad__row">
-                <button type="button" className="glass-btn" aria-label="چپ" onPointerDown={steer('left')}>
-                  ◀
+              <div className="snake-glass-pad__col">
+                <button type="button" className="glass-btn" aria-label="بالا" onPointerDown={steer('up')}>
+                  ▲
                 </button>
-                <button type="button" className="glass-btn" aria-label="راست" onPointerDown={steer('right')}>
-                  ▶
+                <button type="button" className="glass-btn" aria-label="پایین" onPointerDown={steer('down')}>
+                  ▼
                 </button>
               </div>
-              <button type="button" className="glass-btn" aria-label="پایین" onPointerDown={steer('down')}>
-                ▼
+              <button
+                type="button"
+                className="glass-btn glass-btn--side"
+                aria-label="راست"
+                onPointerDown={steer('right')}
+              >
+                ▶
               </button>
             </div>
           </div>
