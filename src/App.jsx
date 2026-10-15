@@ -14,6 +14,7 @@ import NumberMerge from './games/NumberMerge'
 import TicTacToe from './games/TicTacToe'
 import CarGame from './games/CarGame'
 import AnimalSounds from './games/AnimalSounds'
+import TrailRide from './games/TrailRide'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/games/tic-tac-toe" element={<TicTacToe />} />
           <Route path="/games/car" element={<CarGame />} />
           <Route path="/games/animal-sounds" element={<AnimalSounds />} />
+          <Route path="/games/trail" element={<TrailRide />} />
           <Route path="/games/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
