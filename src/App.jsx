@@ -8,6 +8,9 @@ import BallBlast from './games/BallBlast'
 import SnakeGame from './games/SnakeGame'
 import CrossyRoad from './games/CrossyRoad'
 import MetroRun from './games/MetroRun'
+import FruitBasket from './games/FruitBasket'
+import BallTower from './games/BallTower'
+import NumberMerge from './games/NumberMerge'
 
 export default function App() {
   return (
@@ -22,6 +25,9 @@ export default function App() {
           <Route path="/games/snake" element={<SnakeGame />} />
           <Route path="/games/crossy" element={<CrossyRoad />} />
           <Route path="/games/metro" element={<MetroRun />} />
+          <Route path="/games/fruit" element={<FruitBasket />} />
+          <Route path="/games/tower" element={<BallTower />} />
+          <Route path="/games/merge" element={<NumberMerge />} />
           <Route path="/games/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

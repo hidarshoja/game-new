@@ -1849,6 +1849,133 @@ a {
   background: linear-gradient(180deg, #facc15, #f97316);
 }
 
+.game-shell:has(.tower-game.arcade--live) {
+  background: #1e1b4b;
+}
+
+.game-shell:has(.fruit-game.arcade--live) {
+  background: linear-gradient(180deg, #7dd3fc, #86efac);
+}
+
+.game-shell:has(.fruit-game.arcade--live) .game-topbar {
+  background: linear-gradient(180deg, rgba(14, 116, 144, 0.55), transparent);
+}
+
+.fruit-pad .glass-btn {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.28));
+}
+
+.tower-intro {
+  position: relative;
+  width: 54px;
+  height: 78px;
+}
+
+.tower-intro span,
+.tower-intro b {
+  position: absolute;
+  left: 8px;
+  width: 38px;
+  height: 12px;
+  border-radius: 999px;
+  background: #fb7185;
+}
+
+.tower-intro span:first-child { top: 8px; background: #22d3ee; }
+.tower-intro span:nth-child(2) { top: 28px; }
+.tower-intro b {
+  top: 50px;
+  left: 18px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fecdd3;
+}
+
+.fruit-intro {
+  font-size: 2rem;
+  letter-spacing: 0.2em;
+}
+
+.merge {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.merge-board {
+  width: min(100%, calc(100svh - 270px));
+  aspect-ratio: 1;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px;
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.45);
+  direction: ltr;
+  touch-action: none;
+}
+
+.merge-tile {
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.05rem, 5.5vw, 1.7rem);
+}
+
+.merge-tile--on {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  animation: rise-in 0.18s ease;
+}
+
+.merge-best {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+}
+
+.merge-pad {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) 78px;
+  gap: 10px;
+  direction: ltr;
+}
+
+.merge-pad__col {
+  display: grid;
+  gap: 8px;
+}
+
+.merge-intro {
+  display: flex;
+  gap: 8px;
+}
+
+.merge-intro span {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.merge-intro span:last-child {
+  background: #fdba74;
+  color: #fff;
+}
+
 @media (min-width: 431px) {
   body {
     display: flex;
