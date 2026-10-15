@@ -1220,6 +1220,332 @@ a {
   margin-bottom: 8px;
 }
 
+/* ========== BRICK STACK ========== */
+.tetris {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  direction: ltr;
+  position: relative;
+}
+
+.tetris-hud {
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr 92px;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.tetris-scorebox,
+.next-box {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 16px;
+  padding: 8px 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.tetris-scorebox span,
+.next-box span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.tetris-scorebox strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.7rem;
+  line-height: 1;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.speed-dots i {
+  width: 18px;
+  height: 8px;
+  border-radius: 99px;
+  background: #d7e0ec;
+}
+
+.speed-dots i.on {
+  background: #ff7a59;
+}
+
+.next-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.mini-piece {
+  width: 64px;
+  height: 48px;
+  display: grid;
+  gap: 2px;
+}
+
+.mini-piece__brick,
+.mini-piece__empty {
+  border-radius: 3px;
+}
+
+.mini-piece__brick {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.tetris-board {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 10 / 15;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(15, minmax(0, 1fr));
+  gap: 3px;
+  padding: 8px;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 30%),
+    #1b2434;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 14px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.tetris-cell {
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  min-width: 0;
+  min-height: 0;
+}
+
+.tetris-cell--brick {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 42%), var(--brick);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tetris-cell--ghost {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+
+.brick-gain {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  animation: score-float 0.7s ease forwards;
+}
+
+.brick-demo {
+  display: flex;
+  gap: 8px;
+}
+
+.brick-demo span {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 42%), var(--brick);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.16);
+}
+
+.tetris-final-score {
+  font-family: var(--display);
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ef5a36;
+}
+
+.tetris-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  direction: ltr;
+}
+
+.pad-btn {
+  min-height: 54px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.pad-btn:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.pad-btn--down {
+  grid-column: 1 / -1;
+  background: linear-gradient(180deg, #ff8a68 0%, var(--btn) 45%, var(--btn-deep) 100%);
+  border: none;
+}
+
+/* ========== BALL BLAST ========== */
+.blast {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.blast-hud {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 8px;
+}
+
+.blast-chip {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.blast-chip span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.blast-chip strong {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.blast-chip--score strong {
+  color: #7c3aed;
+}
+
+.blast-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+}
+
+.blast-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+  background: #0b1224;
+}
+
+.blast-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 52px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.blast-legend {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.blast-legend span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.lg {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.lg-wide { background: #34d399; color: #6ee7b7; }
+.lg-narrow { background: #fb7185; color: #fecdd3; }
+.lg-multi { background: #c084fc; color: #e9d5ff; }
+.lg-star { background: #facc15; color: #fde68a; }
+.lg-slow { background: #22d3ee; color: #a5f3fc; }
+
+.blast-intro-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.35);
+}
+
+.box-gold { background: linear-gradient(180deg, #fcd34d, #f59e0b); }
+.box-ball { background: linear-gradient(180deg, #6ee7b7, #34d399); }
+.box-bomb { background: linear-gradient(180deg, #fb7185, #f43f5e); }
+.box-crystal { background: linear-gradient(180deg, #67e8f9, #22d3ee); }
+
 @media (min-width: 431px) {
   body {
     display: flex;

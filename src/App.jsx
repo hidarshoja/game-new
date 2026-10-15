@@ -3,6 +3,8 @@ import Home from './pages/Home'
 import GamePage from './pages/GamePage'
 import BalloonPop from './games/BalloonPop'
 import AnimalMatch from './games/AnimalMatch'
+import BrickStack from './games/BrickStack'
+import BallBlast from './games/BallBlast'
 
 export default function App() {
   return (
@@ -12,6 +14,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/games/balloon-pop" element={<BalloonPop />} />
           <Route path="/games/animal-match" element={<AnimalMatch />} />
+          <Route path="/games/brick-stack" element={<BrickStack />} />
+          <Route path="/games/ball-blast" element={<BallBlast />} />
           <Route path="/games/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
