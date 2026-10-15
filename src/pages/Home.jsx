@@ -12,9 +12,17 @@ export default function Home() {
       </div>
 
       <header className="home-hero">
-        <p className="home-kicker">دنیای بازی‌های کودک</p>
-        <h1>بازی‌های شاد</h1>
+        <h3>بازی‌های کودکانه محمد شجاع</h3>
         <p className="home-sub">یکی را انتخاب کن و شروع کن</p>
+        <p className="home-sub">برای همکاری و ساخت بازی دلخواه به ایدی تلگرام زیر پیام دهید</p>
+        <div style={{ display: 'flex', gap: '10px' , alignItems: 'center' , justifyContent: 'center' , width: '100%'}}>
+        <a href="https://t.me/H_programmer" target="_blank" rel="noopener noreferrer" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+          <span className="home-card__body">
+            <span className="home-card__index" style={{color: '#fff'}}>تلگرام</span>
+            <span className="home-card__title" style={{color: '#fff' , direction: 'ltr'}}>@H_programmer</span>
+          </span>
+        </a>
+        </div>
       </header>
 
       <InstallApp />
