@@ -64,8 +64,17 @@ export default function BeastHunt() {
     const aimFromPointer = (w, h) => {
       const hero = heroPos(w, h)
       const p = pointerRef.current
-      const dx = p.x - hero.x
-      const dy = p.y - (hero.y - 22)
+      // همیشه کمی به سمت حیوان قفل می‌شود تا بازی روان باشد
+      let tx = p.x || w * 0.7
+      let ty = p.y || h * 0.58
+      if (state.beast && !state.beast.dead) {
+        const by = state.beast.drawY || h * 0.58
+        const bx = state.beast.x - 24
+        tx = tx * 0.25 + bx * 0.75
+        ty = ty * 0.25 + by * 0.75
+      }
+      const dx = tx - hero.x
+      const dy = ty - (hero.y - 22)
       let angle = Math.atan2(dy, Math.max(12, dx))
       angle = Math.max(-1.15, Math.min(0.85, angle))
       state.aim = angle

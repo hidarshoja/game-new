@@ -1,15 +1,15 @@
 /** ۱۰ مرحله پایه — هر حیوان تعداد تیر مشخصی می‌خواهد */
 export const BEASTS = [
-  { id: 'snake', name: 'مار', hits: 2, speed: 22, accent: '#16a34a' },
-  { id: 'fox', name: 'روباه', hits: 3, speed: 24, accent: '#ea580c' },
-  { id: 'eagle', name: 'عقاب', hits: 4, speed: 28, accent: '#92400e' },
-  { id: 'wolf', name: 'گرگ', hits: 5, speed: 25, accent: '#57534e' },
-  { id: 'boar', name: 'گراز', hits: 6, speed: 21, accent: '#78716c' },
-  { id: 'croc', name: 'تمساح', hits: 7, speed: 19, accent: '#166534' },
-  { id: 'lion', name: 'شیر', hits: 8, speed: 23, accent: '#ca8a04' },
-  { id: 'bear', name: 'خرس', hits: 9, speed: 18, accent: '#78350f' },
-  { id: 'tiger', name: 'ببر', hits: 9, speed: 26, accent: '#f97316' },
-  { id: 'dragon', name: 'اژدها', hits: 10, speed: 16, accent: '#7c3aed' },
+  { id: 'snake', name: 'مار', hits: 2, speed: 16, accent: '#16a34a' },
+  { id: 'fox', name: 'روباه', hits: 3, speed: 18, accent: '#ea580c' },
+  { id: 'eagle', name: 'عقاب', hits: 4, speed: 21, accent: '#92400e' },
+  { id: 'wolf', name: 'گرگ', hits: 5, speed: 19, accent: '#57534e' },
+  { id: 'boar', name: 'گراز', hits: 6, speed: 16, accent: '#78716c' },
+  { id: 'croc', name: 'تمساح', hits: 7, speed: 14, accent: '#166534' },
+  { id: 'lion', name: 'شیر', hits: 8, speed: 17, accent: '#ca8a04' },
+  { id: 'bear', name: 'خرس', hits: 9, speed: 13, accent: '#78350f' },
+  { id: 'tiger', name: 'ببر', hits: 9, speed: 20, accent: '#f97316' },
+  { id: 'dragon', name: 'اژدها', hits: 10, speed: 12, accent: '#7c3aed' },
 ]
 
 export const STAGES_PER_LEVEL = BEASTS.length
@@ -134,15 +134,17 @@ export function updateHunt(state, dt, width, height, heroX) {
   }
 
   let hit = false
-  const hitR = beast.id === 'snake' || beast.id === 'eagle' ? 46 : 58
   const by = height * 0.58 + Math.sin(beast.bob * 2.2) * (beast.id === 'eagle' ? 18 : 6)
   beast.drawY = by
+  // جعبه برخورد بزرگ‌تر تا تیرها راحت‌تر بخورند
+  const hitLeft = beast.x - 90
+  const hitRight = beast.x + 55
+  const hitTop = by - 55
+  const hitBottom = by + 50
 
   for (const b of state.bullets) {
     if (b.life <= 0) continue
-    const dx = b.x - beast.x
-    const dy = b.y - by
-    if (dx * dx + dy * dy < hitR * hitR) {
+    if (b.x >= hitLeft && b.x <= hitRight && b.y >= hitTop && b.y <= hitBottom) {
       b.life = 0
       beast.hp -= 1
       beast.hurt = 0.18
