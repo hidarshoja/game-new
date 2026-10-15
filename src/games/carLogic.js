@@ -15,11 +15,15 @@ export function createRide(style) {
     alive: true,
     time: 0,
     nextId: 1,
+    jumps: 0,
   }
 }
 
 export function jumpCar(state) {
-  if (!state.alive || state.y > 2) return false
+  if (!state.alive) return false
+  if (state.y >= -2) state.jumps = 0
+  if (state.jumps >= 2) return false
+  state.jumps += 1
   state.vy = -560
   return true
 }
@@ -34,6 +38,7 @@ export function updateRide(state, dt) {
   if (state.y > 0) {
     state.y = 0
     state.vy = 0
+    state.jumps = 0
   }
 
   state.spawn -= dt

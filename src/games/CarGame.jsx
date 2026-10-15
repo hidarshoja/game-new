@@ -19,6 +19,11 @@ const EXHAUSTS = [
   { id: 'calm', label: 'معمولی' },
   { id: 'fire', label: 'آتشی' },
 ]
+const VEHICLES = [
+  { id: 'bike', label: 'موتور' },
+  { id: 'car', label: 'ماشین' },
+  { id: 'tractor', label: 'تراکتور' },
+]
 const BODIES = [
   { id: 'pickup', label: 'وانت' },
   { id: 'sport', label: 'مسابقه' },
@@ -31,6 +36,7 @@ const defaultStyle = () => ({
   decal: 'star',
   exhaust: 'fire',
   body: 'monster',
+  vehicle: 'car',
 })
 
 export default function CarGame() {
@@ -144,6 +150,7 @@ export default function CarGame() {
 
   const hop = (event) => {
     event.preventDefault()
+    event.stopPropagation()
     if (stateRef.current && jumpCar(stateRef.current)) playFlip()
   }
 
@@ -155,7 +162,7 @@ export default function CarGame() {
             <p className="level-panel__kicker">ماشین بازی</p>
             <canvas ref={previewRef} className="car-show" />
             <h2 className="level-panel__title">ماشینت را بساز و بران</h2>
-            <p className="level-panel__meta">بدنه، رنگ، چرخ، طرح و اگزوز</p>
+            <p className="level-panel__meta">وسیله، بدنه، رنگ، چرخ، طرح و اگزوز</p>
             <button type="button" className="primary-btn snake-start" onClick={() => setPhase('garage')}>
               ساخت ماشین
             </button>
@@ -165,6 +172,12 @@ export default function CarGame() {
         {phase === 'garage' && (
           <div className="garage">
             <canvas ref={previewRef} className="car-show" />
+            <p>وسیله</p>
+            <div className="choice-row">
+              {VEHICLES.map((item) => (
+                <button key={item.id} type="button" className={style.vehicle === item.id ? 'on' : ''} onClick={() => patch('vehicle', item.id)}>{item.label}</button>
+              ))}
+            </div>
             <p>بدنه</p>
             <div className="choice-row">
               {BODIES.map((item) => (
@@ -337,6 +350,17 @@ function drawTruck(ctx, x, ground, scale, style, time, dist, tilt) {
   paint.addColorStop(0.45, style.color)
   paint.addColorStop(1, shade(style.color, -50))
 
+  if (style.vehicle === 'bike') {
+    drawBike(ctx, s, style, time, dist, radius, paint)
+    ctx.restore()
+    return
+  }
+  if (style.vehicle === 'tractor') {
+    drawTractor(ctx, s, style, time, dist, radius, paint)
+    ctx.restore()
+    return
+  }
+
   if (style.body === 'sport') {
     round(ctx, -20 * s, -16 * s, 128 * s, 24 * s, 12 * s)
     ctx.fillStyle = paint
@@ -401,6 +425,79 @@ function drawTruck(ctx, x, ground, scale, style, time, dist, tilt) {
     ctx.fillRect(-22 * s, 0, 10 * s, 4 * s)
   }
   ctx.restore()
+}
+
+function drawBike(ctx, s, style, time, dist, radius, paint) {
+  const wheel = Math.max(14 * s, radius * 0.72)
+  ctx.strokeStyle = shade(style.color, -40)
+  ctx.lineWidth = 4 * s
+  ctx.beginPath()
+  ctx.moveTo(-6 * s, 8 * s)
+  ctx.lineTo(28 * s, -6 * s)
+  ctx.lineTo(70 * s, -8 * s)
+  ctx.lineTo(18 * s, 8 * s)
+  ctx.stroke()
+  ctx.fillStyle = paint
+  round(ctx, 18 * s, -28 * s, 42 * s, 18 * s, 10 * s)
+  ctx.fill()
+  ctx.fillStyle = '#1e293b'
+  round(ctx, 34 * s, -22 * s, 22 * s, 8 * s, 4 * s)
+  ctx.fill()
+  ctx.strokeStyle = '#e2e8f0'
+  ctx.lineWidth = 3 * s
+  ctx.beginPath()
+  ctx.moveTo(62 * s, -16 * s)
+  ctx.lineTo(78 * s, -34 * s)
+  ctx.moveTo(70 * s, -34 * s)
+  ctx.lineTo(88 * s, -30 * s)
+  ctx.stroke()
+  paintDecal(ctx, s, style)
+  drawWheel(ctx, 0, 10 * s, wheel, dist, style.wheel)
+  drawWheel(ctx, 78 * s, 10 * s, wheel, dist, style.wheel)
+  drawExhaust(ctx, s, style, time, -18 * s, 4 * s)
+}
+
+function drawTractor(ctx, s, style, time, dist, radius, paint) {
+  const rear = Math.max(radius, 26 * s)
+  const front = Math.max(12 * s, rear * 0.48)
+  ctx.fillStyle = paint
+  round(ctx, -8 * s, -16 * s, 108 * s, 26 * s, 8 * s)
+  ctx.fill()
+  round(ctx, 46 * s, -48 * s, 46 * s, 36 * s, 8 * s)
+  ctx.fill()
+  ctx.fillStyle = 'rgba(224, 242, 254, 0.95)'
+  round(ctx, 54 * s, -40 * s, 30 * s, 18 * s, 4 * s)
+  ctx.fill()
+  ctx.fillStyle = shade(style.color, -35)
+  round(ctx, 8 * s, -42 * s, 8 * s, 28 * s, 3 * s)
+  ctx.fill()
+  ctx.fillStyle = '#334155'
+  ctx.fillRect(6 * s, -46 * s, 12 * s, 6 * s)
+  paintDecal(ctx, s, style)
+  drawWheel(ctx, 8 * s, 12 * s, rear, dist, 'monster')
+  drawWheel(ctx, 96 * s, 14 * s, front, dist, style.wheel)
+  drawExhaust(ctx, s, style, time, 10 * s, -46 * s)
+}
+
+function drawExhaust(ctx, s, style, time, x, y) {
+  if (style.exhaust === 'fire') {
+    const flicker = (10 + Math.sin(time * 28) * 6) * s
+    ctx.fillStyle = '#fb923c'
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    ctx.lineTo(x - flicker, y + 4 * s)
+    ctx.lineTo(x + 6 * s, y + 8 * s)
+    ctx.fill()
+    ctx.fillStyle = '#fde68a'
+    ctx.beginPath()
+    ctx.moveTo(x + 2 * s, y + 2 * s)
+    ctx.lineTo(x - flicker * 0.5, y + 5 * s)
+    ctx.lineTo(x + 5 * s, y + 7 * s)
+    ctx.fill()
+    return
+  }
+  ctx.fillStyle = 'rgba(148, 163, 184, 0.8)'
+  ctx.fillRect(x, y, 10 * s, 4 * s)
 }
 
 function paintDecal(ctx, s, style) {
