@@ -11,7 +11,7 @@ export default function AnimalSounds() {
   const [score, setScore] = useState(0)
   const [puzzle, setPuzzle] = useState(null)
   const [seconds, setSeconds] = useState(0)
-  const [wrongId, setWrongId] = useState('')
+  const [mark, setMark] = useState(null)
   const lockRef = useRef(false)
   const livesRef = useRef(3)
 
@@ -24,7 +24,7 @@ export default function AnimalSounds() {
     setPuzzle(next)
     setSeconds(config.seconds)
     setRound(roundNumber)
-    setWrongId('')
+    setMark(null)
     lockRef.current = false
     window.setTimeout(() => playCreature(next.answer), 250)
   }
@@ -62,12 +62,14 @@ export default function AnimalSounds() {
     livesRef.current = left
     setLives(left)
     if (left <= 0) setPhase('over')
-    else window.setTimeout(() => deal(levelIndex, round + 1), 450)
+    else window.setTimeout(() => deal(levelIndex, round + 1), 750)
   }
 
   const choose = (animal) => {
     if (phase !== 'playing' || lockRef.current || !puzzle) return
-    if (animal.id === puzzle.answer.id) {
+    const ok = animal.id === puzzle.answer.id
+    setMark({ id: animal.id, ok })
+    if (ok) {
       lockRef.current = true
       playPop()
       const bonus = 10 + seconds
@@ -82,11 +84,10 @@ export default function AnimalSounds() {
           setPhase('levelup')
         }
       } else {
-        window.setTimeout(() => deal(levelIndex, nextRound), 400)
+        window.setTimeout(() => deal(levelIndex, nextRound), 700)
       }
       return
     }
-    setWrongId(animal.id)
     miss()
   }
 
@@ -105,7 +106,7 @@ export default function AnimalSounds() {
             <p className="level-panel__kicker">{ANIMALS.length} صدای حیوان</p>
             <div className="zoo-faces" aria-hidden="true">🐱 🐶 🦁 🐸</div>
             <h2 className="level-panel__title">صدا را بشنو و حیوان را پیدا کن</h2>
-            <p className="level-panel__meta">ده مرحله، هر بار سخت‌تر</p>
+            <p className="level-panel__meta">ده مرحله با صدای واقعی هر حیوان</p>
             <button type="button" className="primary-btn snake-start" onClick={begin}>
               شروع بازی
             </button>
@@ -128,10 +129,10 @@ export default function AnimalSounds() {
                 <button
                   key={animal.id}
                   type="button"
-                  className={`zoo-card ${wrongId === animal.id ? 'zoo-card--bad' : ''}`}
+                  className={`zoo-card ${mark?.id === animal.id ? (mark.ok ? 'zoo-card--good' : 'zoo-card--bad') : ''}`}
                   onClick={() => choose(animal)}
                 >
-                  <span>{animal.emoji}</span>
+                  <i aria-hidden="true">{animal.emoji}</i>
                   <small>{animal.name}</small>
                 </button>
               ))}

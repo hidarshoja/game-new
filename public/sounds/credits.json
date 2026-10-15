@@ -1,0 +1,137 @@
+[
+  {
+    "id": "cat",
+    "name": "گربه",
+    "file": "cat.mp3",
+    "title": "Meow domestic cat.ogg",
+    "author": "Smser",
+    "license": "GFDL",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Meow_domestic_cat.ogg"
+  },
+  {
+    "id": "cow",
+    "name": "گاو",
+    "file": "cow.mp3",
+    "title": "Single Cow Moo.ogg",
+    "author": "MichaeltheFox8621",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Single_Cow_Moo.ogg"
+  },
+  {
+    "id": "deer",
+    "name": "گوزن",
+    "file": "deer.mp3",
+    "title": "Barking deer.ogg",
+    "author": "L. Shyamal",
+    "license": "CC BY-SA 2.5",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/3/36/Barking_deer.ogg"
+  },
+  {
+    "id": "dog",
+    "name": "سگ",
+    "file": "dog.mp3",
+    "title": "Bark Huayra.ogg",
+    "author": "redpanal.org",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/9/96/Bark_Huayra.ogg"
+  },
+  {
+    "id": "fox",
+    "name": "روباه",
+    "file": "fox.mp3",
+    "title": "Red Fox (Vulpes vulpes) (W1CDR0001529 BD12).ogg",
+    "author": "",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/79/Red_Fox_%28Vulpes_vulpes%29_%28W1CDR0001529_BD12%29.ogg"
+  },
+  {
+    "id": "bear",
+    "name": "خرس",
+    "file": "bear.mp3",
+    "title": "Bear growl.ogg",
+    "author": "Shizhao",
+    "license": "CC BY 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Bear_growl.ogg"
+  },
+  {
+    "id": "wolf",
+    "name": "گرگ",
+    "file": "wolf.mp3",
+    "title": "Wolf howls.ogg",
+    "author": "",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/8/87/Wolf_howls.ogg"
+  },
+  {
+    "id": "elephant",
+    "name": "فیل",
+    "file": "elephant.mp3",
+    "title": "Elephant voice - trumpeting.ogg",
+    "author": "தகவலுழவன்",
+    "license": "CC0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/4/40/Elephant_voice_-_trumpeting.ogg"
+  },
+  {
+    "id": "giraffe",
+    "name": "زرافه",
+    "file": "giraffe.mp3",
+    "title": "Giraffehum4.oga",
+    "author": "Anton Baotic, Florian Sicks and Angela S. Stoeger",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/76/Giraffehum4.oga"
+  },
+  {
+    "id": "horse",
+    "name": "اسب",
+    "file": "horse.mp3",
+    "title": "Segregation-of-information-about-emotional-arousal-and-valence-in-horse-whinnies-srep09989-s3.oga",
+    "author": "Briefer E, Maigrot A, Mandel R, Freymond S, Bachmann I, Hillmann E",
+    "license": "CC BY 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Segregation-of-information-about-emotional-arousal-and-valence-in-horse-whinnies-srep09989-s3.oga"
+  },
+  {
+    "id": "pig",
+    "name": "خوک",
+    "file": "pig.mp3",
+    "title": "Mudchute pig 3.ogg",
+    "author": "Secretlondon",
+    "license": "CC BY-SA 3.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/65/Mudchute_pig_3.ogg"
+  },
+  {
+    "id": "sheep",
+    "name": "گوسفند",
+    "file": "sheep.mp3",
+    "title": "Sheep bleating.ogg",
+    "author": "earthcalling",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/13/Sheep_bleating.ogg"
+  },
+  {
+    "id": "goat",
+    "name": "بز",
+    "file": "goat.mp3",
+    "title": "Herd of goats bleating.ogg",
+    "author": "stephan",
+    "license": "Public domain",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Herd_of_goats_bleating.ogg"
+  },
+  {
+    "id": "frog",
+    "name": "قورباغه",
+    "file": "frog.mp3",
+    "title": "Frogs croak calling chorus at night.ogg",
+    "author": "JogiAsad",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/5/51/Frogs_croak_calling_chorus_at_night.ogg"
+  },
+  {
+    "id": "monkey",
+    "name": "میمون",
+    "file": "monkey.mp3",
+    "title": "Sound-of-stump-tailed-macaque-(macaca-arctoides).ogg",
+    "author": "Rushenb",
+    "license": "CC BY-SA 4.0",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/2/28/Sound-of-stump-tailed-macaque-%28macaca-arctoides%29.ogg"
+  }
+]

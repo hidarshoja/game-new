@@ -177,21 +177,32 @@ const CREATURES = {
   },
 }
 
+const clips = new Map()
+let currentClip = null
+
 export function playCreature(animal) {
   if (!animal) return
-  if (CREATURES[animal.id]) {
-    CREATURES[animal.id]()
-    return
+  const src = `/sounds/${animal.id}.mp3`
+  let audio = clips.get(animal.id)
+  if (!audio) {
+    audio = new Audio(src)
+    audio.preload = 'auto'
+    clips.set(animal.id, audio)
   }
-  const seed = [...animal.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)
-  const base = 120 + (seed % 20) * 68
-  const wave = ['sine', 'triangle', 'square', 'sawtooth'][seed % 4]
-  const count = 2 + (seed % 4)
-  for (let i = 0; i < count; i += 1) {
-    const freq = base * (0.75 + ((seed + i * 5) % 8) * 0.11)
-    tone(freq, 0.07 + (i % 3) * 0.04, wave, 0.055, i * 0.1)
+  if (currentClip && currentClip !== audio) currentClip.pause()
+  currentClip = audio
+  audio.pause()
+  try {
+    audio.currentTime = 0
+  } catch {
+    /* clip not ready yet */
   }
-  if (seed % 6 === 0) noiseBurst(0.12, 300 + (seed % 800), 0.05, 0.05)
+  window.clearTimeout(audio._cut)
+  const played = audio.play()
+  audio._cut = window.setTimeout(() => audio.pause(), 2800)
+  played?.catch(() => {
+    if (CREATURES[animal.id]) CREATURES[animal.id]()
+  })
 }
 
 export function playAnimal(id) {

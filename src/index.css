@@ -2116,13 +2116,11 @@ a {
 
 .garage p { font-size: 0.85rem; opacity: 0.8; }
 
-.car-stage {
-  height: 120px;
+.car-show {
+  width: 100%;
+  height: 168px;
   border-radius: 20px;
-  background: linear-gradient(180deg, #ffedd5, #fdba74);
-  display: grid;
-  place-items: end center;
-  padding-bottom: 16px;
+  display: block;
 }
 
 .css-car {
@@ -2230,23 +2228,41 @@ a {
 }
 
 .zoo-card {
-  min-height: 84px;
   border: 0;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #fef3c7, #d6a15a);
-  color: #12203a;
+  background: transparent;
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: inset 0 0 0 4px rgba(120, 53, 15, 0.25);
+  padding: 0;
 }
 
-.zoo-card span { font-size: 1.8rem; line-height: 1; }
+.zoo-card i {
+  width: min(100%, 104px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 5px solid #9a5b24;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 2.35rem;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.7), transparent 36%),
+    repeating-radial-gradient(circle at 50% 50%, #f6d7a2 0 3px, #e7c07a 3px 6px);
+  box-shadow: inset 0 -10px 14px rgba(120, 53, 15, 0.18), 0 8px 0 rgba(68, 32, 8, 0.25);
+}
+
 .zoo-card small { font-weight: 800; font-size: 0.78rem; }
-.zoo-card--bad { outline: 3px solid #ef4444; }
+.zoo-card--good i {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.45), inset 0 -10px 14px rgba(22, 101, 52, 0.12);
+}
+.zoo-card--bad i {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.45), inset 0 -10px 14px rgba(127, 29, 29, 0.12);
+}
 
 .zoo-faces { font-size: 1.8rem; letter-spacing: 0.15em; }
 

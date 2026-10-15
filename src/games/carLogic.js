@@ -39,35 +39,42 @@ export function updateRide(state, dt) {
   state.spawn -= dt
   state.coinSpawn -= dt
   if (state.spawn <= 0) {
-    state.obstacles.push({
-      id: state.nextId,
-      x: 980,
-      w: 46 + Math.random() * 24,
-      h: 36 + Math.random() * 28,
-    })
+    const roll = Math.random()
+    const kind = roll < 0.42 ? 'rock' : roll < 0.74 ? 'crate' : 'barrier'
+    const size = {
+      rock: { w: 44, h: 22 },
+      crate: { w: 48, h: 50 },
+      barrier: { w: 34, h: 74 },
+    }[kind]
+    state.obstacles.push({ id: state.nextId, x: 1020, kind, ...size })
     state.nextId += 1
-    state.spawn = Math.max(0.85, 1.7 - state.time * 0.02)
+    state.spawn = Math.max(0.9, 1.75 - state.time * 0.018)
   }
   if (state.coinSpawn <= 0) {
-    state.coins.push({
-      id: state.nextId,
-      x: 860,
-      y: -70 - Math.random() * 70,
-      got: false,
-    })
-    state.nextId += 1
-    state.coinSpawn = 0.7 + Math.random() * 0.6
+    const arc = Math.random() < 0.5
+    const count = arc ? 3 : 1
+    for (let i = 0; i < count; i += 1) {
+      state.coins.push({
+        id: state.nextId,
+        x: 900 + i * 58,
+        y: arc ? -78 - Math.sin(i * 1.4) * 48 : -90 - Math.random() * 50,
+        got: false,
+      })
+      state.nextId += 1
+    }
+    state.coinSpawn = 0.85 + Math.random() * 0.7
   }
 
   const step = state.speed * dt
   for (const ob of state.obstacles) ob.x -= step
   for (const coin of state.coins) coin.x -= step
 
-  const carX = 92
-  const carW = 78
+  const carX = 78
+  const carW = 112
+  const clearance = state.style?.wheel === 'monster' ? 24 : state.style?.wheel === 'big' ? 10 : 0
   for (const ob of state.obstacles) {
-    const hitX = ob.x < carX + carW - 16 && ob.x + ob.w > carX + 18
-    const hitY = -state.y < ob.h - 6
+    const hitX = ob.x < carX + carW - 18 && ob.x + ob.w > carX + 22
+    const hitY = -state.y + clearance < ob.h - 4
     if (hitX && hitY) {
       state.alive = false
       return 'dead'
