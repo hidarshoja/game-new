@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import InstallApp from '../components/InstallApp'
 import { games } from '../data/games'
 
 export default function Home() {
@@ -15,6 +16,8 @@ export default function Home() {
         <h1>بازی‌های شاد</h1>
         <p className="home-sub">یکی را انتخاب کن و شروع کن</p>
       </header>
+
+      <InstallApp />
 
       <nav className="home-list" aria-label="لیست بازی‌ها">
         {games.map((game, index) => {

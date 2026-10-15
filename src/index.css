@@ -164,6 +164,40 @@ a {
   font-size: 0.98rem;
 }
 
+.install-app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.install-app__btn {
+  border: 0;
+  cursor: pointer;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff8a62, #ef5a36);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(239, 90, 54, 0.35);
+}
+
+.install-app__btn:active {
+  transform: scale(0.98);
+}
+
+.install-app__hint {
+  max-width: 30ch;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
 .home-list {
   position: relative;
   z-index: 1;
