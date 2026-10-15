@@ -172,25 +172,26 @@ export default function SnakeGame() {
     })
 
     if (state.snake.length > 1) {
-      ctx.save()
-      ctx.beginPath()
-      state.snake.forEach((part, index) => {
-        const point = centerOf(part)
-        if (index === 0) ctx.moveTo(point.x, point.y)
-        else ctx.lineTo(point.x, point.y)
-      })
-      ctx.lineCap = 'round'
-      ctx.lineJoin = 'round'
-      ctx.lineWidth = cell * 0.72
-      ctx.strokeStyle = 'rgba(20, 83, 45, 0.55)'
-      ctx.shadowColor = 'rgba(74, 222, 128, 0.55)'
-      ctx.shadowBlur = 18
-      ctx.stroke()
-      ctx.lineWidth = cell * 0.5
-      ctx.strokeStyle = '#22c55e'
-      ctx.shadowBlur = 10
-      ctx.stroke()
-      ctx.restore()
+      const neighbors = (a, b) => Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1
+      const strokeBody = (width, color, blur) => {
+        ctx.save()
+        ctx.beginPath()
+        state.snake.forEach((part, index) => {
+          const point = centerOf(part)
+          if (index === 0 || !neighbors(state.snake[index - 1], part)) ctx.moveTo(point.x, point.y)
+          else ctx.lineTo(point.x, point.y)
+        })
+        ctx.lineCap = 'round'
+        ctx.lineJoin = 'round'
+        ctx.lineWidth = width
+        ctx.strokeStyle = color
+        ctx.shadowColor = 'rgba(74, 222, 128, 0.55)'
+        ctx.shadowBlur = blur
+        ctx.stroke()
+        ctx.restore()
+      }
+      strokeBody(cell * 0.72, 'rgba(20, 83, 45, 0.55)', 18)
+      strokeBody(cell * 0.5, '#22c55e', 10)
     }
 
     for (let index = state.snake.length - 1; index >= 0; index -= 1) {
