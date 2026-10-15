@@ -13,8 +13,8 @@ export default function Home() {
 
       <header className="home-hero">
         <h3>بازی‌های کودکانه محمد شجاع</h3>
-        <p className="home-sub">یکی را انتخاب کن و شروع کن</p>
-        <p className="home-sub">برای همکاری و ساخت بازی دلخواه به ایدی تلگرام زیر پیام دهید</p>
+        <img src="/mohammad.jpg" alt="logo" style={{ width: '100px' , height: '100px' , borderRadius: '50%' }} />
+        <p className="home-sub">برای ساخت بازی دلخواه به ایدی تلگرام زیر پیام دهید.</p>
         <div style={{ display: 'flex', gap: '10px' , alignItems: 'center' , justifyContent: 'center' , width: '100%'}}>
         <a href="https://t.me/H_programmer" target="_blank" rel="noopener noreferrer" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
           <span className="home-card__body">
